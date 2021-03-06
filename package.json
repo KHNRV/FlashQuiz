@@ -23,6 +23,9 @@
     "pg-native": "^3.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
+    "eslint": "^7.21.0",
+    "nodemon": "^1.19.1",
+    "prettier": "^2.2.1",
+    "prettier-eslint": "^12.0.0"
   }
 }
