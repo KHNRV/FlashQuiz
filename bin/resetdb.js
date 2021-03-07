@@ -25,12 +25,23 @@ const runSchemaFiles = function () {
 
 const runSeedFiles = function () {
   console.log(chalk.cyan(`-> Loading Seeds ...`));
-  const schemaFilenames = fs.readdirSync('./db/seeds');
+  const seedFilenames = fs.readdirSync('./db/01_seeds');
 
-  for (const fn of schemaFilenames) {
-    const sql = fs.readFileSync(`./db/seeds/${fn}`, 'utf8');
+  for (const fn of seedFilenames) {
+    const sql = fs.readFileSync(`./db/01_seeds/${fn}`, 'utf8');
     console.log(`\t-> Running ${chalk.green(fn)}`);
     client.querySync(sql);
+  }
+};
+
+const runFinalSeedFiles = function () {
+  console.log(chalk.cyan(`-> Loading Seeds ...`));
+  const finalSeedFilenames = fs.readdirSync('./db/02_seeds');
+
+  for (const fn of finalSeedFilenames) {
+      const sql = fs.readFileSync(`./db/02_seeds/${fn}`, 'utf8');
+      console.log(`\t-> Running ${chalk.green(fn)}`);
+      client.querySync(sql);
   }
 };
 
@@ -39,7 +50,12 @@ try {
   client.connectSync(connectionString);
   runSchemaFiles();
   runSeedFiles();
-  client.end();
+  console.log(chalk.yellow('Waiting 25,000 ms to run final seeds...'));
+  setTimeout(()=>{
+    runFinalSeedFiles();
+    console.log(chalk.green('Final seeds have been completed!'));
+    client.end();
+  }, 25000)
 } catch (err) {
   console.error(chalk.red(`Failed due to error: ${err}`));
   client.end();
