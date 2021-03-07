@@ -50,12 +50,12 @@ try {
   client.connectSync(connectionString);
   runSchemaFiles();
   runSeedFiles();
-  console.log(chalk.yellow('Waiting 25,000 ms to run final seeds...'));
-  setTimeout(()=>{
-    runFinalSeedFiles();
-    console.log(chalk.green('Final seeds have been completed!'));
-    client.end();
-  }, 25000)
+  // console.log(chalk.yellow('Waiting 25,000 ms to run final seeds...'));
+  // setTimeout(()=>{
+  //   runFinalSeedFiles();
+  //   console.log(chalk.green('Final seeds have been completed!'));
+  // }, 25000)
+  client.end();
 } catch (err) {
   console.error(chalk.red(`Failed due to error: ${err}`));
   client.end();
