@@ -74,8 +74,6 @@ const getLeaderBoard = function(quiz_id) {
 };
 exports.getLeaderBoard = getLeaderBoard;
 
-//TODO: createQuiz, startAttempt, finishAttempt
-
 /**
  * Insert an attempt into the attempts table
  * @param {number} quiz_id - mandatory
@@ -85,14 +83,32 @@ exports.getLeaderBoard = getLeaderBoard;
 const startAttempt = function(quiz_id, user_id) {
 
   const queryParams = [quiz_id, user_id];
-  const queryString = ` INSERT INTO attempts (quiz_id, user_id) VALUES ($1,$2) RETURNING *;`;
+  const queryString = `INSERT INTO attempts (quiz_id, user_id) VALUES ($1,$2) RETURNING *;`;
   return db
-    .query(queryString, queryParams)
-    .then ((res) => {
-      return { 'attempt_id': res.rows[0].id };
-    });
+  .query(queryString, queryParams)
+  .then ((res) => {
+    return { 'attempt_id': res.rows[0].id };
+  });
 };
 exports.startAttempt = startAttempt;
+
+const finishAttempt = function(num_correct, attempt_id) {
+  queryParams = [num_correct, attempt_id];
+  queryString = `
+    UPDATE attempts
+    SET end_time = NOW()::TIMESTAMP,
+    num_correct = $1
+    WHERE id = $2;
+  `;
+  return db
+    .query(queryString, queryParams)
+    .then((res) => {
+      return res;
+    })
+};
+exports.finishAttempt = finishAttempt;
+
+//TODO: createQuiz
 
 
 //TODO: remove this before merging
@@ -115,6 +131,11 @@ exports.startAttempt = startAttempt;
 // --- startAttempt ---
 
 // startAttempt(1,1)
-  // .then(data => console.log(data)); //expect:
+  // .then(data => console.log(data)); //expect: an attempt_id from the server
 
 // --- finishAttempt ---
+  // startAttempt(1,1)
+  //   .then((data) => {
+  //     finishAttempt(3, data.attempt_id)
+  //       .then(data => console.log(data));
+  //   })

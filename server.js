@@ -1,5 +1,5 @@
-//! Nick: "I refactored how the pool is required through database.js so that the functions where more easily tested."
-const db = require('./database');
+//! Nick: "I refactored how the pool is required through database.js so that the dataHelpers can be more easily tested and required."
+const db = require('./dataHelpers');
 
 // Web server config
 const PORT = process.env.PORT || 8080;
