@@ -1,6 +1,6 @@
 //TODO: add error handling to all dataHelpers.methods
 
-const db = require('./db/pool.js');
+const db = require("./db/pool.js");
 
 //TODO: REFACTOR THIS LATER
 /**
@@ -8,7 +8,7 @@ const db = require('./db/pool.js');
  * @returns {object} raw query response object
  */
 const users = function() {
-  return db.query('SELECT * FROM users;')
+  return db.query("SELECT * FROM users;");
 };
 exports.users = users;
 
@@ -28,15 +28,13 @@ const getQuizzes = function(user_id) {
     WHERE is_active IS TRUE
   `;
   if (user_id) {
-    queryString += `AND owner_id = $1;`
+    queryString += `AND owner_id = $1;`;
     queryParams = [user_id];
   } else {
     queryString += `AND is_public = $1;`;
-    queryParams = ['TRUE'];
+    queryParams = ["TRUE"];
   }
-  return db
-    .query(queryString, queryParams)
-    .then(res => res.rows);
+  return db.query(queryString, queryParams).then((res) => res.rows);
 };
 exports.getQuizzes = getQuizzes;
 
@@ -46,7 +44,6 @@ exports.getQuizzes = getQuizzes;
  * @returns {array} an array of attempts ordered by score descending
  */
 const getLeaderBoard = function(quiz_id) {
-
   const queryParams = [quiz_id];
   const queryString = `
   SELECT name,
@@ -70,10 +67,7 @@ const getLeaderBoard = function(quiz_id) {
   ) AS query
   ORDER BY computed_score DESC;
   `;
-  return db
-    .query(queryString,queryParams)
-    .then(res => res.rows);
-
+  return db.query(queryString, queryParams).then((res) => res.rows);
 };
 exports.getLeaderBoard = getLeaderBoard;
 
@@ -84,13 +78,10 @@ exports.getLeaderBoard = getLeaderBoard;
  * @returns {object} attempt_id
  */
 const startAttempt = function(quiz_id, user_id) {
-
   const queryParams = [quiz_id, user_id];
   const queryString = `INSERT INTO attempts (quiz_id, user_id) VALUES ($1,$2) RETURNING *;`;
-  return db
-  .query(queryString, queryParams)
-  .then ((res) => {
-    return { 'attempt_id': res.rows[0].id };
+  return db.query(queryString, queryParams).then((res) => {
+    return { attempt_id: res.rows[0].id };
   });
 };
 exports.startAttempt = startAttempt;
@@ -110,20 +101,50 @@ const finishAttempt = function(num_correct, attempt_id) {
     num_correct = $1
     WHERE id = $2;
   `;
-  return db
-    .query(queryString, queryParams)
-    .then((res) => {
-      return res;
-    })
+  return db.query(queryString, queryParams).then((res) => {
+    return res;
+  });
 };
 exports.finishAttempt = finishAttempt;
 
 //TODO: createQuiz, getQuizData
 
+const addQuiz = function(user_id, data) {
+  return db.query("SELECT * FROM quizzes;").then((res) => res.rows);
+};
+exports.addQuiz = addQuiz;
+
+const fetchQuizDetails = function(quiz_id) {
+  const queryParams = [quiz_id];
+  const queryString = `
+  SELECT * FROM quizzes WHERE id = $1`;
+  return db.query(queryString, queryParams).then((res) => {
+    if (res.rows) return res.rows[0];
+    else return undefined;
+  });
+};
+exports.fetchQuizDetails = fetchQuizDetails;
+
+const fetchQuizQuestions = function(quiz_id) {
+  const queryParams = [quiz_id];
+  const queryString = `
+  SELECT prompt,
+    text AS answer,
+    is_correct,
+    time_limit
+    FROM questions
+    JOIN answers ON question_id = questions.id
+    WHERE quiz_id = $1;
+  `;
+  return db.query(queryString, queryParams).then((res) => {
+    if (res.rows) return res.rows;
+    else return undefined;
+  });
+};
+exports.fetchQuizQuestions = fetchQuizQuestions;
 
 //TODO: remove this before merging
 // --- TEST CODE ---
-
 
 // --- getQuizzes ---
 
@@ -132,20 +153,19 @@ exports.finishAttempt = finishAttempt;
 // getQuizzes(3)
 //  .then((data)=>console.log(data)); // expect: an array of 1 objects
 
-
 // --- getLeaderBoard ---
 
 // getLeaderBoard(1)
-//   .then((data)=>console.log(data)); //expect: an array of 6 objects
+// .then((data)=>console.log(data)); //expect: an array of 6 objects
 
 // --- startAttempt ---
 
 // startAttempt(1,1)
-  // .then(data => console.log(data)); //expect: an attempt_id from the server
+// .then(data => console.log(data)); //expect: an attempt_id from the server
 
 // --- finishAttempt ---
-  // startAttempt(1,1)
-  //   .then((data) => {
-  //     finishAttempt(3, data.attempt_id)
-  //       .then(data => console.log(data));
-  //   })
+// startAttempt(1,1)
+//   .then((data) => {
+//     finishAttempt(3, data.attempt_id)
+//       .then(data => console.log(data));
+//   })

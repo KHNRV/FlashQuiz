@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 // ! require cookie session npm package here
 // ! require sessions db helper functions here
-//getUserName(userId);
+//getUsernameById(userId);
 //getUserByEmail(userId);
 
 /*
