@@ -1,14 +1,17 @@
+//TODO: add error handling to all dataHelpers.methods
+
 const db = require('./db/pool.js');
 
 //TODO: REFACTOR THIS LATER
 /**
  * Recreating the function that came with the skeleton
- * @returns {object} the raw query response object
+ * @returns {object} raw query response object
  */
 const users = function() {
   return db.query('SELECT * FROM users;')
 };
 exports.users = users;
+
 /**
  * Get all public quizzes, or a specific users public and private quizzes
  * @param {number} user_id -  optional
@@ -92,6 +95,13 @@ const startAttempt = function(quiz_id, user_id) {
 };
 exports.startAttempt = startAttempt;
 
+//TODO: change what this sends back based on front-end requirements
+/**
+ * Update an attempt with number of correct answers
+ * @param {number} num_correct - mandatory
+ * @param {number} attempt_id - mandatory
+ * @returns {object} raw query response object
+ */
 const finishAttempt = function(num_correct, attempt_id) {
   queryParams = [num_correct, attempt_id];
   queryString = `
@@ -108,7 +118,7 @@ const finishAttempt = function(num_correct, attempt_id) {
 };
 exports.finishAttempt = finishAttempt;
 
-//TODO: createQuiz
+//TODO: createQuiz, getQuizData
 
 
 //TODO: remove this before merging
