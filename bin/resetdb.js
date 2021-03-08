@@ -34,27 +34,11 @@ const runSeedFiles = function () {
   }
 };
 
-const runFinalSeedFiles = function () {
-  console.log(chalk.cyan(`-> Loading Seeds ...`));
-  const finalSeedFilenames = fs.readdirSync('./db/02_seeds');
-
-  for (const fn of finalSeedFilenames) {
-      const sql = fs.readFileSync(`./db/02_seeds/${fn}`, 'utf8');
-      console.log(`\t-> Running ${chalk.green(fn)}`);
-      client.querySync(sql);
-  }
-};
-
 try {
   console.log(`-> Connecting to PG using ${connectionString} ...`);
   client.connectSync(connectionString);
   runSchemaFiles();
   runSeedFiles();
-  // console.log(chalk.yellow('Waiting 25,000 ms to run final seeds...'));
-  // setTimeout(()=>{
-  //   runFinalSeedFiles();
-  //   console.log(chalk.green('Final seeds have been completed!'));
-  // }, 25000)
   client.end();
 } catch (err) {
   console.error(chalk.red(`Failed due to error: ${err}`));

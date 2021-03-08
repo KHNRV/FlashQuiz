@@ -1,8 +1,9 @@
---!would likey not send this exact table as a response from the server - just want to illustrate an option for how to compute a score
+--! I do not recommend returning this exact table - I want to illustrate an option for how to compute a score with a query
 --TODO: still need to determine how scores would work
---in this example I basically create a score modifier that adds time remaining as a percentage to a minimum possible modifier of 80%
+--in this example I basically create a score modifier that adds ratio of time remaining  to a minimum possible modifier of .80
 -- ex. if you took up ALL the time, your score would be 80% of the correct questions,
 -- if you managed to answer every question instantaneously your score would be 180% of of the correct questions
+-- ? if we wanted to we could make the scores a very large number just to make it seem more exciting
 
 SELECT id,
 name,
