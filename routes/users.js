@@ -42,6 +42,7 @@ module.exports = (db) => {
     // ? Setup a delicious cookie ->Need to discuss various approach to this. I need to know the id of last user in db so I can increment or user Username for cookies in this app (not ideal)
     //redirect to GET /quizzes
   });
+
   //Route 3 - GET /:userId/quizzes
   router.get("/:userId/quizzes", (req, res) => {
     //A user needs to be logged in in order to have access to this section

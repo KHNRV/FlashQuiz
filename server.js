@@ -1,5 +1,5 @@
-// load .env data into process.env
-require("dotenv").config();
+//! Nick: "I refactored how the pool is required through database.js so that the dataHelpers can be more easily tested and required."
+const db = require("./dataHelpers");
 
 // Web server config
 const PORT = process.env.PORT || 8080;
@@ -9,12 +9,6 @@ const bodyParser = require("body-parser");
 const sass = require("node-sass-middleware");
 const app = express();
 const morgan = require("morgan");
-
-// PG database client/connection setup
-const { Pool } = require("pg");
-const dbParams = require("./lib/db.js");
-const db = new Pool(dbParams); // * db is used as a variable name instead of pool
-db.connect();
 
 // Load the logger first so all (static) HTTP requests are logged to STDOUT
 // 'dev' = Concise output colored by response status for development use.
