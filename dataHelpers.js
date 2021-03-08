@@ -76,6 +76,12 @@ exports.getLeaderBoard = getLeaderBoard;
 
 //TODO: createQuiz, startAttempt, finishAttempt
 
+/**
+ * Insert an attempt into the attempts table
+ * @param {number} quiz_id - mandatory
+ * @param {number} user_id - mandatory
+ * @returns {object} attempt_id
+ */
 const startAttempt = function(quiz_id, user_id) {
 
   const queryParams = [quiz_id, user_id];
@@ -86,7 +92,7 @@ const startAttempt = function(quiz_id, user_id) {
       return { 'attempt_id': res.rows[0].id };
     });
 };
-
+exports.startAttempt = startAttempt;
 
 
 //TODO: remove this before merging
@@ -108,5 +114,7 @@ const startAttempt = function(quiz_id, user_id) {
 
 // --- startAttempt ---
 
-startAttempt(1,1)
-  .then(data => console.log(data)); //expect:
+// startAttempt(1,1)
+  // .then(data => console.log(data)); //expect:
+
+// --- finishAttempt ---
