@@ -18,6 +18,7 @@ const router = express.Router();
   ------ Routes 5 & 6 ------
   5 - GET /quizzes/:quizId/play -> Fetches ejs (dynamic html) for the quiz structure/layout i.e. question, 4 answer boxes, timer visible etc.
   6 - GET /quizzes/:quizId/json -> Get the json containing the actual values for a particular quiz i.e. the quiz description, question, answers etc.
+  ?  Route 7 i.e. fetching a user's stats on a particular quiz - may not be required.
 */
 
 module.exports = (db) => {
