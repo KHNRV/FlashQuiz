@@ -118,8 +118,56 @@ const finishAttempt = function(num_correct, attempt_id) {
 };
 exports.finishAttempt = finishAttempt;
 
-//TODO: createQuiz, getQuizData
+//TODO: createQuiz, fetchQuizDetails, fetchQuizQuestions
 
+const addQuiz = function(user_Id, data) {
+  const queryParams = [user_Id, data,title, data.description];
+  let queryString = `
+    INSERT INTO quizzes (owner_id, title, description)
+    VALUES ($1, $2, $3);
+  `;
+
+//   INSERT INTO questions (quiz_id, prompt) VALUES
+// (1, 'Which city is the Capital of China?'),
+
+  return db
+    .query(queryString,queryParams)
+    .then(res => res)
+};
+exports.addQuiz = addQuiz;
+
+const fetchQuizDetails = function(quiz_id) {
+  const queryParams = [quiz_id];
+  const queryString = `
+  SELECT * FROM quizzes WHERE id = $1`
+  return db
+    .query(queryString, queryParams)
+    .then(res => {
+      if (res.rows) return res.rows[0]
+      else return undefined;
+    })
+};
+exports.fetchQuizDetails = fetchQuizDetails;
+
+const fetchQuizQuestions = function(quiz_id) {
+  const queryParams = [quiz_id];
+  const queryString = `
+  SELECT prompt,
+    text AS answer,
+    is_correct,
+    time_limit
+    FROM questions
+    JOIN answers ON question_id = questions.id
+    WHERE quiz_id = $1;
+  `;
+  return db
+    .query(queryString, queryParams)
+    .then(res => {
+      if (res.rows) return res.rows;
+      else return undefined;
+    });
+};
+exports.fetchQuizQuestions = fetchQuizQuestions;
 
 //TODO: remove this before merging
 // --- TEST CODE ---
@@ -138,10 +186,12 @@ exports.finishAttempt = finishAttempt;
 // getLeaderBoard(1)
 //   .then((data)=>console.log(data)); //expect: an array of 6 objects
 
+
 // --- startAttempt ---
 
 // startAttempt(1,1)
   // .then(data => console.log(data)); //expect: an attempt_id from the server
+
 
 // --- finishAttempt ---
   // startAttempt(1,1)
@@ -149,3 +199,11 @@ exports.finishAttempt = finishAttempt;
   //     finishAttempt(3, data.attempt_id)
   //       .then(data => console.log(data));
   //   })
+
+
+// --- fetchQuizQuestions ---
+
+// fetchQuizQuestions(4)
+  // .then(data => console.log(data)); //expect: undefined
+// fetchQuizQuestions(1)
+  // .then(data => console.log(data)) //expect: an array with 20 objects
