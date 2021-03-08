@@ -1,18 +1,18 @@
-const db = require('./db/index.js');
+const db = require('./db/pool.js');
 
 //TODO: DELETE THIS LATER
 /**
  * Recreating the function that came with the skeleton
- * @returns the raw pg query response object
+ * @returns {object} the raw query response object
  */
 const users = function() {
   return db.query('SELECT * FROM users;')
 };
 exports.users = users;
 /**
- * Get all public quizzes, or a users public and private quizzes
+ * Get all public quizzes, or a specific users public and private quizzes
  * @param {number} user_id -  optional
- * @returns
+ * @returns {array} query response rows
  */
 const getQuizzes = function(user_id) {
   let queryString = `
@@ -35,8 +35,13 @@ const getQuizzes = function(user_id) {
     .query(queryString, queryParams)
     .then(res => res.rows);
 };
-exports.users = users;
+exports.getQuizzes = getQuizzes;
 
+/**
+ * Get the leader board for a specific quiz
+ * @param {number} quiz_id - mandatory
+ * @returns {array} an array of attempts ordered by score descending
+ */
 const getLeaderBoard = function(quiz_id) {
 
   const queryParams = [quiz_id];
@@ -67,6 +72,8 @@ const getLeaderBoard = function(quiz_id) {
     .then(res => res.rows);
 
 };
+exports.getLeaderBoard = getLeaderBoard;
+
 //TODO: remove this before merging
 // --- TEST CODE ---
 
