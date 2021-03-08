@@ -1,6 +1,6 @@
 const db = require('./db/pool.js');
 
-//TODO: DELETE THIS LATER
+//TODO: REFACTOR THIS LATER
 /**
  * Recreating the function that came with the skeleton
  * @returns {object} the raw query response object
@@ -74,6 +74,21 @@ const getLeaderBoard = function(quiz_id) {
 };
 exports.getLeaderBoard = getLeaderBoard;
 
+//TODO: createQuiz, startAttempt, finishAttempt
+
+const startAttempt = function(quiz_id, user_id) {
+
+  const queryParams = [quiz_id, user_id];
+  const queryString = ` INSERT INTO attempts (quiz_id, user_id) VALUES ($1,$2) RETURNING *;`;
+  return db
+    .query(queryString, queryParams)
+    .then ((res) => {
+      return { 'attempt_id': res.rows[0].id };
+    });
+};
+
+
+
 //TODO: remove this before merging
 // --- TEST CODE ---
 
@@ -91,5 +106,7 @@ exports.getLeaderBoard = getLeaderBoard;
 // getLeaderBoard(1)
 //   .then((data)=>console.log(data)); //expect: an array of 6 objects
 
+// --- startAttempt ---
 
-
+startAttempt(1,1)
+  .then(data => console.log(data)); //expect:
