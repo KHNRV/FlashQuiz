@@ -28,15 +28,28 @@ module.exports = (db) => {
     // Capture the returned db data (i.e. the resolved promise response) in a variable (e.g. const publicQuizzes)
     // Insert in templateVars i.e. templateVars = {publicQuizzes} & include in the response
     // res.render("index.ejs", templateVars)
+    db.getQuizzes().then((response) => {
+      const userId = req.session && res.session.userId; // *TODO Optional chaining
+      const publicQuizzes = response;
+      const templateVars = { publicQuizzes, userId };
+      res.render("./pages/index.ejs", templateVars);
+      //TODO: Confirm that the ejs file is indeed index.ejs
+    });
   });
 
   // Route 2 - POST /quizzes
   router.post("/", (req, res) => {
     //What is important here is to send the quiz details from req.body along with the userId (from the cookie) to the db
     //userId = req.session.userId;
-    //Db function that adds a quiz to the db (e.g. addQuiz({userId, ...req.params});
+    //Db function that adds a quiz to the db (e.g. addQuiz({userId, ...req.body});
     //Redirect to the user's quizzes i.e. res.redirect("myquizzes.ejs");
     //add a .catch to deal with errors
+    const userId = req.session && res.session.userId;
+    db.addQuiz({ userId, ...req.body })
+      .then((response) => {
+        res.redirect("/quizzes");
+      })
+      .catch((error) => console.log(error));
   });
 
   //Route 3 - GET /quizzes/new
@@ -45,6 +58,13 @@ module.exports = (db) => {
     //const userId = req.session.userId;
     //If (!userId) res.redirect(/sessions/new)
     //Else res.render("create.ejs", {userId})
+    const userId = req.session && res.session.userId;
+    if (!userId) {
+      res.redirect("/sessions/new");
+    } else {
+      const templateVars = { userId };
+      res.render("./pages/create.ejs", templateVars);
+    }
   });
 
   //Route 4 - GET /quizzes/:quizId
@@ -52,20 +72,52 @@ module.exports = (db) => {
     //If a user has a quiz link and is logged in; the user should be able to view it regardless of whether it is public or private
     //? Does the above statement holds true if the user is not logged in?
     //const userId = req.session.userId;
-    //Check if a cookie exists otherwise res.status(403).redirect("/sessions/new")
     //const quiz = req.params.quizId
-    //We will need to check via fetchQuiz if the requested quiz exists in our db otherwise return res.status(404).send("resource does not exist")
+    //We will need to check via fetchQuizDetails if the requested quiz exists in our db otherwise return res.status(404).send("resource does not exist")
     //Capture the response and include the userId (for e.g. in templateVars) and return res.render("q_welcome.ejs", templateVars) --> change name to quizzes_show
     //Reminder that stats of that userId needs to be displayed.
-  });
+    const userId = req.session && res.session.userId;
+    const quizId = req.params.quizId;
+    db.fetchQuizDetails(quizId)
+      .then((response) => {
+        if (!response) {
+          return res.status(404).send("Resource does not exist");
+        }
+        const quizDetails = response;
+        db.getLeaderBoard(quizId).then((response) => {
+          const leaderBoard = response;
+          const templateVars = { quizDetails, userId, leaderBoard };
+          res.render("./pages/q_welcome.ejs", templateVars);
+        });
+      })
+      .catch((error) => console.log(error));
+  }); // * Opportunity to use promise.all here!
 
   //Route 5 - GET quizzes/:quizId/play
   router.get("/:quizId/play", (req, res) => {
     //The objective of this route is to return the game engine (ejs) along with the data to populate a given session (i.e. associated to a quizID)
     //const userId = req.session.userId - check if user is logged in otherwise redirect to login page
     //const quizId = req.params.quizId - need this to determine which quiz to retrieve from the db (i.e. question, potential answers, correct answer etc.)
-    //fetchQuiz(quizId)
+    //fetchQuizQuestions(quizId)
     //res.render("q_play.ejs", templateVars) - templateVars will include the quiz Object along with userId
+    const userId = req.session && res.session.userId;
+    const quizId = req.params.quizId;
+    if (!userId) {
+      return res.status(302).redirect("/sessions/new");
+    }
+    if (!quizId) {
+      return res.status(404).send("Resource does not exist");
+    }
+    fetchQuizQuestions(quizId)
+      .then((response) => {
+        if (!response) {
+          return res.status(404).send("No questions associated to this quizId");
+        }
+        const quizQuestions = response;
+        const templateVars = { userId, quizQuestions };
+        res.render("./pages/q_play.ejs", templateVars);
+      })
+      .catch((error) => console.log(error));
   });
 
   //Route 6 - GET quizzes/:quizId/json
@@ -75,6 +127,8 @@ module.exports = (db) => {
     //fetchQuiz(quizId)
     //res.json(quizId)
   });
+
+  //Route 7 - POST quizzes/:quiz/play
 
   return router;
 };
