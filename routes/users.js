@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-// ! require bcrypt & cookie sessions npm packages
 // ! require users db helper functions here
 //fetchUsername(userId)
 //verifyEmail(email) - check if an email exists
