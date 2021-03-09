@@ -2,7 +2,7 @@ const express = require("express");
 const { fetchQuizDetails, fetchQuizQuestions } = require("../dataHelpers");
 const router = express.Router();
 
-// ! List of db helper functions below for this router
+// ! List of db helper functions utilized for this router
 //getPublicQuizzes()
 //addQuiz({userId, ...req.params})
 //fetchAssembledQuiz(quizId, userId, publicId)
