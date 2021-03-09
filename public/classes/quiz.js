@@ -35,7 +35,6 @@ class Quiz {
     return this._ownerId;
   }
 
-  //! These methods could be from a sub-class that extends Quiz - this way they can live in a different section of the app and not cause problems for us on the client side
   setOwnerId(userId) {
     // Add some sort of validation to this
     //? Do we link this method to a db query

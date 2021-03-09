@@ -1,8 +1,7 @@
-//TODO: add error handling to all dataHelpers.methods
-
 const db = require('./db/pool.js');
 
 
+//? add error handling to all dataHelpers.methods or is that on router?
 /**
  * Get the user's username from a specific user id
  * @param {number} user_id - mandatory
@@ -28,7 +27,7 @@ const getUserByEmail = function(email) {
   return db.query(queryString, queryParams)
     .then(res => res.rows[0])
 };
-
+exports.getUserByEmail = getUserByEmail;
 
 /**
  * Get all public quizzes, or a specific users public and private quizzes
@@ -234,6 +233,12 @@ const addQuiz = function(user_Id, quiz) {
 exports.addQuiz = addQuiz;
 
 //! this only works with ascii characters for example 'Saīd' would need to be entered as U&'Sa\+012Bd which our db does not support'
+/**
+ * Check to see if an email or username already exists in the database
+ * @param {string} email
+ * @param {string} username
+ * @returns {boolean} returns true if either email or username already exists in database
+ */
 const authenticateForms = function(email, username) {
   const queryParams = [email, username];
   const queryString = `
@@ -250,8 +255,22 @@ const authenticateForms = function(email, username) {
 exports.authenticateForms = authenticateForms;
 
 
-//TODO: addUser
+const addUser = function(username, email, password) {
+  queryParams = [username, email, password]
+  queryString = `
+    INSERT INTO users (name, email, password)
+    VALUES ($1, $2, $3)
+    RETURNING * ;
+  `;
+  return db.query(queryString, queryParams)
+    .then(res => res.rows[0])
+};
+exports.addUser = addUser;
 
+// --- addUser ---
+
+// addUser('test', 'test@test.ca', 'testMoney')
+//   .then(data => console.log(data))
 
 //TODO: remove this before merging
 // --- TEST CODE ---
