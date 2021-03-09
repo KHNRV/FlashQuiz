@@ -1,5 +1,4 @@
-const db = require('./db/pool.js');
-
+const db = require("./db/pool.js");
 
 //? add error handling to all dataHelpers.methods or is that on router?
 /**
@@ -7,12 +6,24 @@ const db = require('./db/pool.js');
  * @param {number} user_id - mandatory
  * @returns {string} users.name associated with user_id
  */
-const getUsernameById = function(user_id) {
-  const queryParams = [user_id]
-  return db.query('SELECT * FROM users WHERE id = $1;', queryParams)
-    .then(res => res.rows[0].name)
+const fetchUserNameById = function(user_id) {
+  const queryParams = [user_id];
+  if (user_id === undefined) user_id = 0;
+  return db
+    .query("SELECT * FROM users WHERE id = $1;", queryParams)
+    .then((res) => {
+      if (res.rows.length) return res.rows[0].name;
+      else return undefined;
+    });
 };
-exports.getUsernameById = getUsernameById;
+exports.fetchUserNameById = fetchUserNameById;
+
+const fetchAssembledQuiz = function(quizId, userId, publicId) {
+  //set a default value for publicId
+  // console.log("fantastic");
+  return "fantastic";
+};
+exports.fetchAssembledQuiz = fetchAssembledQuiz;
 
 /**
  * Get the user object associated with a specific email
@@ -23,9 +34,8 @@ const getUserByEmail = function(email) {
   const queryParams = [email];
   const queryString = `
     SELECT * FROM users WHERE email = $1;
-  `
-  return db.query(queryString, queryParams)
-    .then(res => res.rows[0])
+  `;
+  return db.query(queryString, queryParams).then((res) => res.rows[0]);
 };
 exports.getUserByEmail = getUserByEmail;
 
@@ -61,7 +71,6 @@ exports.getQuizzes = getQuizzes;
  * @returns {array} an array of attempts ordered by score descending
  */
 const getLeaderboard = function(quiz_id) {
-
   const queryParams = [quiz_id];
   const queryString = `
   SELECT name,
@@ -133,13 +142,11 @@ exports.finishAttempt = finishAttempt;
 const fetchQuizDetails = function(quiz_id) {
   const queryParams = [quiz_id];
   const queryString = `
-  SELECT * FROM quizzes WHERE id = $1`
-  return db
-    .query(queryString, queryParams)
-    .then(res => {
-      if (res.rows) return res.rows[0]
-      else return undefined;
-    })
+  SELECT * FROM quizzes WHERE id = $1`;
+  return db.query(queryString, queryParams).then((res) => {
+    if (res.rows) return res.rows[0];
+    else return undefined;
+  });
 };
 exports.fetchQuizDetails = fetchQuizDetails;
 
@@ -159,12 +166,10 @@ const fetchQuizQuestions = function(quiz_id) {
     JOIN answers ON question_id = questions.id
     WHERE quiz_id = $1;
   `;
-  return db
-    .query(queryString, queryParams)
-    .then(res => {
-      if (res.rows) return res.rows;
-      else return undefined;
-    });
+  return db.query(queryString, queryParams).then((res) => {
+    if (res.rows) return res.rows;
+    else return undefined;
+  });
 };
 exports.fetchQuizQuestions = fetchQuizQuestions;
 
@@ -183,42 +188,49 @@ const addQuiz = function(user_Id, quiz) {
     RETURNING *;
   `;
 
-  return db.query(queryString, queryParams)
-    .then(res => res.rows[0].id)
-    .then(quiz_id => {
+  return db
+    .query(queryString, queryParams)
+    .then((res) => res.rows[0].id)
+    .then((quiz_id) => {
       queryParams.length = 0;
 
       queryParams.push(quiz_id);
       queryString = `INSERT INTO questions (quiz_id, prompt) VALUES`;
-      const valuesArray = []
+      const valuesArray = [];
 
       for (question of quiz.questions) {
-        queryParams.push(question.prompt)
-        valuesArray.push(` ($1, $${queryParams.length})`)
+        queryParams.push(question.prompt);
+        valuesArray.push(` ($1, $${queryParams.length})`);
       }
 
-      queryString += `${valuesArray.join(',')} RETURNING * ;`
+      queryString += `${valuesArray.join(",")} RETURNING * ;`;
 
-      return db.query(queryString, queryParams)
+      return db.query(queryString, queryParams);
     })
-    .then(res => {
+    .then((res) => {
       queryParams.length = 0;
-      queryString = 'INSERT INTO answers (question_id, text, is_correct) VALUES';
+      queryString =
+        "INSERT INTO answers (question_id, text, is_correct) VALUES";
       const valuesArray = [];
 
       for (let i = 0; i < quiz.questions.length; i++) {
         queryParams.push(res.rows[i].id);
-        const qIDParam = `$${queryParams.length}`
+        const qIDParam = `$${queryParams.length}`;
         for (answer of quiz.questions[i].answers) {
-          console.log(queryParams[queryParams.length-2], queryParams[queryParams.length-1] )
-          valuesArray.push(` (${qIDParam},$${queryParams.length-1}, $${queryParams.length})`)
+          console.log(
+            queryParams[queryParams.length - 2],
+            queryParams[queryParams.length - 1]
+          );
+          valuesArray.push(
+            ` (${qIDParam},$${queryParams.length - 1}, $${queryParams.length})`
+          );
         }
       }
-      queryString += `${valuesArray.join(',')} RETURNING *;`
+      queryString += `${valuesArray.join(",")} RETURNING *;`;
 
-      return db.query(queryString, queryParams)
+      return db.query(queryString, queryParams);
     })
-    .then(res => res.rows)
+    .then((res) => res.rows);
 };
 exports.addQuiz = addQuiz;
 
@@ -236,24 +248,21 @@ const authenticateForms = function(email, username) {
   WHERE email = $1 OR name = $2;
   `;
 
-  return db.query(queryString, queryParams)
-    .then(res => {
+  return db.query(queryString, queryParams).then((res) => {
     if (res.rows.length) return true;
     else return false;
-    })
-}
+  });
+};
 exports.authenticateForms = authenticateForms;
 
-
 const addUser = function(username, email, password) {
-  queryParams = [username, email, password]
+  queryParams = [username, email, password];
   queryString = `
     INSERT INTO users (name, email, password)
     VALUES ($1, $2, $3)
     RETURNING * ;
   `;
-  return db.query(queryString, queryParams)
-    .then(res => res.rows[0])
+  return db.query(queryString, queryParams).then((res) => res.rows[0]);
 };
 exports.addUser = addUser;
 
@@ -265,17 +274,16 @@ exports.addUser = addUser;
 //TODO: remove this before merging
 // --- TEST CODE ---
 
-// --- getUsernameById ---
+// --- fetchUsernameById ---
 
-  // getUsernameById(1)
-  //   .then(data => console.log(data));
+// fetchUserNameById(1).then((data) => console.log(data));
 
+// fetchUserNameById(0).then((data) => console.log(data));
 
 // --- getUserByEmail ---
 
-  // getUserByEmail('nick@flashquiz.ca')
-  //   .then(data => console.log(data))
-
+// getUserByEmail('nick@flashquiz.ca')
+//   .then(data => console.log(data))
 
 // --- getQuizzes ---
 
@@ -289,7 +297,6 @@ exports.addUser = addUser;
 // getLeaderboard(1)
 //   .then((data)=>console.log(data)); //expect: an array of 6 objects
 
-
 // --- startAttempt ---
 
 // startAttempt(1,1)
@@ -298,123 +305,119 @@ exports.addUser = addUser;
 // --- finishAttempt ---
 // startAttempt(1,1)
 //   .then((data) => {
-  //     finishAttempt(3, data.attempt_id)
-  //       .then(data => console.log(data));
-  //   })
+//     finishAttempt(3, data.attempt_id)
+//       .then(data => console.log(data));
+//   })
 
+// --- fetchQuizDetails ---
+// TODO: write tests
 
-  // --- fetchQuizDetails ---
-  // TODO: write tests
+// --- fetchQuizQuestions ---
 
-
-  // --- fetchQuizQuestions ---
-
-  // fetchQuizQuestions(4)
-  // .then(data => console.log(data)); //expect: undefined
-  // fetchQuizQuestions(1)
-  //   .then(data => console.log(data)) //expect: an array with 20 objects
-
+// fetchQuizQuestions(4)
+// .then(data => console.log(data)); //expect: undefined
+// fetchQuizQuestions(1)
+//   .then(data => console.log(data)) //expect: an array with 20 objects
 
 // --- addQuiz ---
 
-  // const object = {
-    //   title: 'Colours',
-    //   description: 'The category is colours',
-    //   is_public: 'FALSE',
-    //   questions: [
-      //     {
-        //       prompt: 'What colour is the sky?',
-        //       answers: [
-          //         {
-            //           answer: 'Blue',
-            //           is_correct: 'TRUE'
-            //         },
-            //         {
-              //           answer: 'Green',
-              //           is_correct: 'FALSE'
-              //         },
-              //         {
-                //           answer: 'Yellow',
-                //           is_correct: 'FALSE'
-                //         },
-                //         {
-                  //           answer: 'Violet',
-                  //           is_correct: 'FALSE'
-                  //         }
-                  //       ]
-                  //     },
-                  //     {
-                    //       prompt: 'What colour is the sea?',
-                    //       answers: [
-                      //         {
-                        //           answer: 'Wine-dark',
-                        //           is_correct: 'TRUE'
-                        //         },
-                        //         {
-                          //           answer: 'Green',
-                          //           is_correct: 'FALSE'
-                          //         },
-                          //         {
-                            //           answer: 'Blue',
-                            //           is_correct: 'FALSE'
-                            //         },
-                            //         {
-                              //           answer: 'Turquoise',
-                              //           is_correct: 'FALSE'
-                              //         }
-                              //       ]
-                              //     }
-                              //   ]
-                              // }
+// const object = {
+//   title: 'Colours',
+//   description: 'The category is colours',
+//   is_public: 'FALSE',
+//   questions: [
+//     {
+//       prompt: 'What colour is the sky?',
+//       answers: [
+//         {
+//           answer: 'Blue',
+//           is_correct: 'TRUE'
+//         },
+//         {
+//           answer: 'Green',
+//           is_correct: 'FALSE'
+//         },
+//         {
+//           answer: 'Yellow',
+//           is_correct: 'FALSE'
+//         },
+//         {
+//           answer: 'Violet',
+//           is_correct: 'FALSE'
+//         }
+//       ]
+//     },
+//     {
+//       prompt: 'What colour is the sea?',
+//       answers: [
+//         {
+//           answer: 'Wine-dark',
+//           is_correct: 'TRUE'
+//         },
+//         {
+//           answer: 'Green',
+//           is_correct: 'FALSE'
+//         },
+//         {
+//           answer: 'Blue',
+//           is_correct: 'FALSE'
+//         },
+//         {
+//           answer: 'Turquoise',
+//           is_correct: 'FALSE'
+//         }
+//       ]
+//     }
+//   ]
+// }
 
-                              // addQuiz(1, object)
-                              //   .then(data => console.log(data))
+// addQuiz(1, object)
+//   .then(data => console.log(data))
 
 // --- authenticateForms ---
 
-  // authenticateForms('test', 'Said')
-  //   .then(data => console.log(data))
+// authenticateForms('test', 'Said')
+//   .then(data => console.log(data))
 
 // authenticateForms('kevin@flashquiz.ca', 'MarkBossed')
 //   .then(data => console.log(data))
 
-                              // --- leaderboard object ---
-                              // [
-                                //   {
-                                  //     name: 'Saïd',
-                                  //     accuracy: '60%',
-                                  //     time: PostgresInterval { seconds: 25, milliseconds: 4.935 }, // express as a string
-                                  //     computed_score: 1124.6334 // make integer
-                                  //   },
-                                  //   {
-                                    //     name: 'Kevin',
-                                    //     accuracy: '60%',
-                                    //     time: PostgresInterval { seconds: 26, milliseconds: 4.935 },
-                                    //     computed_score: 1049.6334
-                                    //   },
-                                    //   {
-                                      //     name: 'Nick',
-                                      //     accuracy: '60%',
-                                      //     time: PostgresInterval { seconds: 27, milliseconds: 4.935 },
-                                      //     computed_score: 974.6334
-                                      //   },
-                                      //   {
-                                        //     name: 'Saïd',
-                                        //     accuracy: '60%',
-                                        //     time: PostgresInterval { seconds: 34, milliseconds: 4.935 },
-                                        //     computed_score: 449.6334
-                                        //   },
-                                        //   {
-                                          //     name: 'Kevin',
-                                          //     accuracy: '60%',
-                                          //     time: PostgresInterval { seconds: 35, milliseconds: 4.935 },
-                                          //     computed_score: 374.6334
-                                          //   },
-                                          //   {
-                                            //     name: 'Nick',
-                                            //     accuracy: '60%',
-                                            //     time: PostgresInterval { seconds: 36, milliseconds: 4.935 },
-                                            //     computed_score: 299.6334
-                                            //   }
-                                            // ]
-
+// --- leaderboard object ---
+// [
+//   {
+//     name: 'Saïd',
+//     accuracy: '60%',
+//     time: PostgresInterval { seconds: 25, milliseconds: 4.935 }, // express as a string
+//     computed_score: 1124.6334 // make integer
+//   },
+//   {
+//     name: 'Kevin',
+//     accuracy: '60%',
+//     time: PostgresInterval { seconds: 26, milliseconds: 4.935 },
+//     computed_score: 1049.6334
+//   },
+//   {
+//     name: 'Nick',
+//     accuracy: '60%',
+//     time: PostgresInterval { seconds: 27, milliseconds: 4.935 },
+//     computed_score: 974.6334
+//   },
+//   {
+//     name: 'Saïd',
+//     accuracy: '60%',
+//     time: PostgresInterval { seconds: 34, milliseconds: 4.935 },
+//     computed_score: 449.6334
+//   },
+//   {
+//     name: 'Kevin',
+//     accuracy: '60%',
+//     time: PostgresInterval { seconds: 35, milliseconds: 4.935 },
+//     computed_score: 374.6334
+//   },
+//   {
+//     name: 'Nick',
+//     accuracy: '60%',
+//     time: PostgresInterval { seconds: 36, milliseconds: 4.935 },
+//     computed_score: 299.6334
+//   }
+// ]
