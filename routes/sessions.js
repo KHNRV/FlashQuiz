@@ -24,14 +24,24 @@ module.exports = (db) => {
     //const userId = req.session.userId;
     //getUserName(userId) & insert in templateVars
     //res.render("login.ejs", templateVars)
+    const userId = req.session && req.session.userId;
+    const templateVars = { userId };
+    res.render("login.ejs", templateVars);
   });
 
   //Route 2 - POST /sessions
   router.post("/", (req, res) => {
-    //If any of the email or userName does not exists in db then adios to 403
+    //If any of the email or userName does not exists in db then adios to 302
     //If email or userName is true then check password
     //If password is valid then redirect to GET /quizzes
     //Else adios to 403 res.status(403).send("Sorry, this password is not valid")
+  });
+
+  //Route 3 - DELETE /sessions
+  router.delete("/", (req, res) => {
+    //method override will be used for this
+    // clear cookies session i.e. res.session.userId = null;
+    //redirect to public quizzes
   });
 
   return router;

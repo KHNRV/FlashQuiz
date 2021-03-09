@@ -1,7 +1,7 @@
 const express = require("express");
 const { fetchQuizDetails, fetchQuizQuestions } = require("../dataHelpers");
 const router = express.Router();
-// ! require quizzes db helper functions here
+
 // ! List of db helper functions below for this router
 //getPublicQuizzes()
 //addQuiz({userId, ...req.params})
@@ -21,7 +21,7 @@ const router = express.Router();
   6 - GET /quizzes/:quizId/json -> Get the json containing the actual values for a particular quiz i.e. the quiz description, question, answers etc.
   ?  Route 7 i.e. fetching a user's stats on a particular quiz - may not be required.
 */
-
+// ! I realized that I need to get the username from db using userId (that I collect from the cookie) - for ejs partials.
 module.exports = (db) => {
   // Route 1 - Get /quizzes
   router.get("/", (req, res) => {
@@ -30,11 +30,11 @@ module.exports = (db) => {
     // Insert in templateVars i.e. templateVars = {publicQuizzes} & include in the response
     // res.render("index.ejs", templateVars)
     db.getQuizzes().then((response) => {
-      const userId = req.session && res.session.userId; // *TODO Optional chaining
+      const userId = req.session && req.session.userId; // *TODO Optional chaining
       const publicQuizzes = response;
       const templateVars = { publicQuizzes, userId };
       res.render("./pages/index.ejs", templateVars);
-      //TODO: Confirm that the ejs file is indeed index.ejs
+      //TODO: Confirm that the ejs file will indeed remain index.ejs
     });
   });
 
@@ -45,7 +45,7 @@ module.exports = (db) => {
     //Db function that adds a quiz to the db (e.g. addQuiz({userId, ...req.body});
     //Redirect to the user's quizzes i.e. res.redirect("myquizzes.ejs");
     //add a .catch to deal with errors
-    const userId = req.session && res.session.userId;
+    const userId = req.session && req.session.userId;
     db.addQuiz({ userId, ...req.body })
       .then((response) => {
         res.redirect("/quizzes");
@@ -59,7 +59,7 @@ module.exports = (db) => {
     //const userId = req.session.userId;
     //If (!userId) res.redirect(/sessions/new)
     //Else res.render("create.ejs", {userId})
-    const userId = req.session && res.session.userId;
+    const userId = req.session && req.session.userId;
     if (!userId) {
       res.redirect("/sessions/new");
     } else {
@@ -77,7 +77,7 @@ module.exports = (db) => {
     //We will need to check via fetchQuizDetails if the requested quiz exists in our db otherwise return res.status(404).send("resource does not exist")
     //Capture the response and include the userId (for e.g. in templateVars) and return res.render("q_welcome.ejs", templateVars) --> change name to quizzes_show
     //Reminder that stats of that userId needs to be displayed.
-    const userId = req.session && res.session.userId;
+    const userId = req.session && req.session.userId;
     const quizId = req.params.quizId;
     db.fetchQuizDetails(quizId)
       .then((response) => {
@@ -86,6 +86,7 @@ module.exports = (db) => {
         }
         const quizDetails = response;
         db.getLeaderBoard(quizId).then((response) => {
+          // add return potentially
           const leaderBoard = response;
           const templateVars = { quizDetails, userId, leaderBoard };
           res.render("./pages/q_welcome.ejs", templateVars);
@@ -101,7 +102,7 @@ module.exports = (db) => {
     //const quizId = req.params.quizId - need this to determine which quiz to retrieve from the db (i.e. question, potential answers, correct answer etc.)
     //fetchQuizQuestions(quizId)
     //res.render("q_play.ejs", templateVars) - templateVars will include the quiz Object along with userId
-    const userId = req.session && res.session.userId;
+    const userId = req.session && req.session.userId;
     const quizId = req.params.quizId;
     if (!userId) {
       return res.status(302).redirect("/sessions/new");
