@@ -20,6 +20,7 @@ const router = express.Router();
 module.exports = (db) => {
   //Route 1 - GET /sessions/new
   router.get("/new", (req, res) => {
+    //! add conditionals on whether this is invisible or not - userName not required.
     //Capture the cookie and get userName here for consistency for the ejs partials
     //const userId = req.session.userId;
     //getUserName(userId) & insert in templateVars

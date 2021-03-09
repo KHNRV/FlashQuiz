@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 // ! require users db helper functions here
-//fetchUsernameById(userId)
+//fetchUserNameById(userId)
 //verifyEmail(email) - check if an email exists
 //verifyUsername(username) - check if a userName exists
 //addUser(newUser)
@@ -27,11 +27,13 @@ module.exports = (db) => {
     //res.render("register.ejs", templateVars)
 
     const userId = req.session && req.session.userId;
+
+    // ! add conditionals on who can see this page i.e. if user alrdy logged in etc.
     fetchUsernameById(userId) // ! discuss the cookie issue
       .then((response) => {
         const userName = response;
         const templateVars = { userName };
-        res.render("./pages/register.ejs", templateVars);
+        res.render("./pages/register.ejs", templateVars); // Remove templatevars - not necessary
       })
       .catch((error) => {
         console.log(error);
@@ -101,7 +103,7 @@ module.exports = (db) => {
       .then((response) => {
         const myQuizzes = response;
         const templateVars = { myQuizzes, userId };
-        res.render("./pages/myquizzes.ejs", templateVars);
+        res.render("./pages/myquizzes.ejs", templateVars); // ! userName, myQuizzes
       })
       .catch((error) => {
         console.log(error);

@@ -6,8 +6,7 @@ const router = express.Router();
 //getPublicQuizzes()
 //addQuiz({userId, ...req.params})
 //fetchQuiz(quizId)
-
-// I will need to import/require the db here unless if I export router within a function preloaded with db as an argument (as currently coded); It reduces redundancy but is less descriptive and intuitive.
+//! fetchUserNameById()
 
 /*
   List of quiz Routes/Endpoints:
@@ -21,30 +20,39 @@ const router = express.Router();
   6 - GET /quizzes/:quizId/json -> Get the json containing the actual values for a particular quiz i.e. the quiz description, question, answers etc.
   ?  Route 7 i.e. fetching a user's stats on a particular quiz - may not be required.
 */
+
 // ! I realized that I need to get the username from db using userId (that I collect from the cookie) - for ejs partials.
 module.exports = (db) => {
   // Route 1 - Get /quizzes
   router.get("/", (req, res) => {
-    // Db function that fetches the public quizzes from the db & returns an array of objects e.g. getPublicQuizzes
-    // Capture the returned db data (i.e. the resolved promise response) in a variable (e.g. const publicQuizzes)
-    // Insert in templateVars i.e. templateVars = {publicQuizzes} & include in the response
-    // res.render("index.ejs", templateVars)
-    db.getQuizzes().then((response) => {
-      const userId = req.session && req.session.userId; // *TODO Optional chaining
-      const publicQuizzes = response;
-      const templateVars = { publicQuizzes, userId };
-      res.render("./pages/index.ejs", templateVars);
-      //TODO: Confirm that the ejs file will indeed remain index.ejs
-    });
+    const userId = req.session && req.session.userId; // *TODO Optional chaining
+
+    const promise1 = db.fetchUserNameById(userId).catch((error) => 5);
+    const promise2 = db.getQuizzes();
+    Promise.all([promise1, promise2])
+      .then((response) => {
+        const userName = response[0];
+        const publicQuizzes = response[1];
+        const templateVars = { userName, publicQuizzes };
+        res.render("./pages/index.ejs", templateVars);
+      })
+      .catch((error) => console.log(error));
+
+    // db.fetchUserNameById(userId).then((response) => {
+    //   const userName = response;
+
+    //   db.getQuizzes().then((response) => {
+    //     const publicQuizzes = response;
+    //     const templateVars = { publicQuizzes, userName };
+    //     res.render("./pages/index.ejs", templateVars);
+
+    //     //TODO: Confirm that the ejs file will indeed remain index.ejs
+    //   });
+    // });
   });
 
   // Route 2 - POST /quizzes
   router.post("/", (req, res) => {
-    //What is important here is to send the quiz details from req.body along with the userId (from the cookie) to the db
-    //userId = req.session.userId;
-    //Db function that adds a quiz to the db (e.g. addQuiz({userId, ...req.body});
-    //Redirect to the user's quizzes i.e. res.redirect("myquizzes.ejs");
-    //add a .catch to deal with errors
     const userId = req.session && req.session.userId;
     db.addQuiz({ userId, ...req.body })
       .then((response) => {
@@ -55,10 +63,6 @@ module.exports = (db) => {
 
   //Route 3 - GET /quizzes/new
   router.get("/new", (req, res) => {
-    //If a user visiting this page does not have a cookie, redirect to login page.
-    //const userId = req.session.userId;
-    //If (!userId) res.redirect(/sessions/new)
-    //Else res.render("create.ejs", {userId})
     const userId = req.session && req.session.userId;
     if (!userId) {
       res.redirect("/sessions/new");
@@ -77,6 +81,7 @@ module.exports = (db) => {
     //We will need to check via fetchQuizDetails if the requested quiz exists in our db otherwise return res.status(404).send("resource does not exist")
     //Capture the response and include the userId (for e.g. in templateVars) and return res.render("q_welcome.ejs", templateVars) --> change name to quizzes_show
     //Reminder that stats of that userId needs to be displayed.
+    // ! Leaderboard --> leaderboard involves the personal score or includes everyone's (personal vs global);
     const userId = req.session && req.session.userId;
     const quizId = req.params.quizId;
     db.fetchQuizDetails(quizId)
@@ -88,8 +93,8 @@ module.exports = (db) => {
         db.getLeaderBoard(quizId).then((response) => {
           // add return potentially
           const leaderBoard = response;
-          const templateVars = { quizDetails, userId, leaderBoard };
-          res.render("./pages/q_welcome.ejs", templateVars);
+          const templateVars = { quizDetails, userId, leaderBoard }; // ! quiz object will contain info called quizDetails/ leadeboard gone
+          res.render("./pages/q_welcome.ejs", templateVars); // TODO: send to kevin -> quiz description, globalleaderboard, if(userId) --> personal leaderboard, username
         });
       })
       .catch((error) => console.log(error));
@@ -116,8 +121,8 @@ module.exports = (db) => {
           return res.status(404).send("No questions associated to this quizId");
         }
         const quizQuestions = response;
-        const templateVars = { userId, quizQuestions };
-        res.render("./pages/q_play.ejs", templateVars);
+        const templateVars = { userId, quizQuestions }; // todo: userName, quiz -> questions, answers,
+        res.render("./pages/q_play.ejs", templateVars); // ! consistency in terms of the quiz class
       })
       .catch((error) => console.log(error));
   });
@@ -135,6 +140,7 @@ module.exports = (db) => {
   });
 
   //Route 7 - POST quizzes/:quiz/play
+  //Route 8 - get back the personal record
 
   return router;
 };
