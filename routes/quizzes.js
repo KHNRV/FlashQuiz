@@ -1,4 +1,5 @@
 const express = require("express");
+const { fetchQuizDetails, fetchQuizQuestions } = require("../dataHelpers");
 const router = express.Router();
 // ! require quizzes db helper functions here
 // ! List of db helper functions below for this router
@@ -126,6 +127,10 @@ module.exports = (db) => {
     //quizId = req.params.quizId
     //fetchQuiz(quizId)
     //res.json(quizId)
+    const quizId = req.params.quizId;
+    fetchQuizQuestions(quizId).then((response) => {
+      res.json(response);
+    });
   });
 
   //Route 7 - POST quizzes/:quiz/play
