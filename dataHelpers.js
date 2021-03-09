@@ -118,24 +118,7 @@ const finishAttempt = function(num_correct, attempt_id) {
 };
 exports.finishAttempt = finishAttempt;
 
-//TODO: createQuiz, fetchQuizDetails, fetchQuizQuestions
-
-const addQuiz = function(user_Id, data) {
-  const queryParams = [user_Id, data,title, data.description];
-  let queryString = `
-    INSERT INTO quizzes (owner_id, title, description)
-    VALUES ($1, $2, $3);
-  `;
-
-//   INSERT INTO questions (quiz_id, prompt) VALUES
-// (1, 'Which city is the Capital of China?'),
-
-  return db
-    .query(queryString,queryParams)
-    .then(res => res)
-};
-exports.addQuiz = addQuiz;
-
+//TODO: add jsDoc
 const fetchQuizDetails = function(quiz_id) {
   const queryParams = [quiz_id];
   const queryString = `
@@ -149,6 +132,7 @@ const fetchQuizDetails = function(quiz_id) {
 };
 exports.fetchQuizDetails = fetchQuizDetails;
 
+//TODO: add jsDoc
 const fetchQuizQuestions = function(quiz_id) {
   const queryParams = [quiz_id];
   const queryString = `
@@ -168,6 +152,25 @@ const fetchQuizQuestions = function(quiz_id) {
     });
 };
 exports.fetchQuizQuestions = fetchQuizQuestions;
+
+//TODO: addQuiz, addUser, getUsernameById, getUserByEmail, getUserByUserName
+
+const addQuiz = function(user_Id, data) {
+  const queryParams = [user_Id, data,title, data.description];
+  let queryString = `
+    INSERT INTO quizzes (owner_id, title, description)
+    VALUES ($1, $2, $3);
+  `;
+
+//   INSERT INTO questions (quiz_id, prompt) VALUES
+// (1, 'Which city is the Capital of China?'),
+
+  return db
+    .query(queryString,queryParams)
+    .then(res => res)
+};
+exports.addQuiz = addQuiz;
+
 
 //TODO: remove this before merging
 // --- TEST CODE ---
@@ -199,6 +202,10 @@ exports.fetchQuizQuestions = fetchQuizQuestions;
   //     finishAttempt(3, data.attempt_id)
   //       .then(data => console.log(data));
   //   })
+
+
+// --- fetchQuizDetails ---
+  // TODO: write tests
 
 
 // --- fetchQuizQuestions ---
