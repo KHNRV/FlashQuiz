@@ -11,6 +11,10 @@ const app = express();
 const morgan = require("morgan");
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
+const methodOverride = require("method-override");
+
+//MethodOverride middleware using a query value
+app.use(methodOverride("_method"));
 
 // Load the logger first so all (static) HTTP requests are logged to STDOUT
 // 'dev' = Concise output colored by response status for development use.
