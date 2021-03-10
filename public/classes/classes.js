@@ -82,9 +82,10 @@ class Question {
 
 class Answer {
 
-  constructor(answer,is_correct) {
+  constructor(answer,is_correct, time_limit) {
     this.answer = answer;
     this.is_correct = is_correct;
+    this.time_limit = time_limit
   }
 
 }
