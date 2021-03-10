@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-// ! require bcrypt & cookie sessions npm packages
 // ! require users db helper functions here
-//fetchUsername(userId)
+//fetchUserNameById(userId)
 //verifyEmail(email) - check if an email exists
 //verifyUsername(username) - check if a userName exists
 //addUser(newUser)
+//getQuizzesByUserId(userId)
 
 /*
   List of users Routes/Endpoints:
@@ -25,6 +25,19 @@ module.exports = (db) => {
     //const userName = fetchUsername(userId)
     //const templateVars = {userId}
     //res.render("register.ejs", templateVars)
+
+    const userId = req.session && req.session.userId;
+
+    // ! add conditionals on who can see this page i.e. if user alrdy logged in etc.
+    fetchUsernameById(userId) // ! discuss the cookie issue
+      .then((response) => {
+        const userName = response;
+        const templateVars = { userName };
+        res.render("./pages/register.ejs", templateVars); // Remove templatevars - not necessary
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   });
 
   //Route 2 - POST /users
@@ -41,6 +54,37 @@ module.exports = (db) => {
     //remember to include a .catch for all your db calls in all your functions
     // ? Setup a delicious cookie ->Need to discuss various approach to this. I need to know the id of last user in db so I can increment or user Username for cookies in this app (not ideal)
     //redirect to GET /quizzes
+    const { username, email, password } = req.body;
+    if (!email || !password || !username) {
+      return res
+        .status(400)
+        .send("Empty email address, username and/or password field");
+    }
+    //verifyEmail will check whether an email exists in the db or not
+    verifyEmail(email)
+      .then((response) => {
+        if (!response) {
+          return res.status(400).send("Email address already exists");
+        }
+        //VerifyUsername will check whether a userName exists in the db or not
+        verifyUsername(username).then((response) => {
+          if (!response) {
+            return res.status(400).send("Username address already exists");
+          }
+          const newUser = {
+            email,
+            username,
+            password: bcrypt.hashSync(password, 10),
+          };
+          addUser(newUser).then((response) => {
+            req.session.userId = userId; // ! We need to define what we setup for a cookie i.e. the userId only or whole user object? instead of userId use user? would make life easier in some situations.
+            res.status(302).redirect("/quizzes");
+          });
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   });
 
   //Route 3 - GET /:userId/quizzes
@@ -50,6 +94,20 @@ module.exports = (db) => {
     //getQuizzesByUserId(userId);
     //Need to capture the response & send it back to FE as an array of personal quizzes
     // res.render("myquizzes.ejs", templateVars);
+
+    const userId = req.session && req.session.userId;
+    if (!userId) {
+      return res.redirect("/sessions/new");
+    }
+    getQuizzesByUserId(userId)
+      .then((response) => {
+        const myQuizzes = response;
+        const templateVars = { myQuizzes, userId };
+        res.render("./pages/myquizzes.ejs", templateVars); // ! userName, myQuizzes
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   });
 
   return router;
