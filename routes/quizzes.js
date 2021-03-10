@@ -1,7 +1,6 @@
 const express = require("express");
-const { fetchQuizDetails, fetchQuizQuestions } = require("../dataHelpers");
 const router = express.Router();
-const bcrypt = require("bcrypt");
+
 // ! List of db helper functions utilized for this router
 //getPublicQuizzes()
 //addQuiz({userId, ...req.params})
@@ -120,7 +119,7 @@ module.exports = (db) => {
   router.get("/:quizId/json", (req, res) => {
     //The objective of this route is to send to the FE a json representation of a specific quiz object
     const quizId = req.params.quizId;
-    fetchQuizQuestions(quizId).then((response) => {
+    db.fetchQuizQuestions(quizId).then((response) => {
       res.json(response);
     });
   });

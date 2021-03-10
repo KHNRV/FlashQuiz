@@ -1,9 +1,5 @@
 const db = require("./db/pool.js");
-<<<<<<< HEAD
-const Quiz = require("./public/classes/quiz")
-=======
 const Quiz = require("./public/classes/quiz.js");
->>>>>>> master
 
 //? add error handling to all dataHelpers.methods or is that on router?
 /**
@@ -65,22 +61,12 @@ const getQuizzes = function(user_id) {
     queryString += `AND is_public = $1;`;
     queryParams = ["TRUE"];
   }
-<<<<<<< HEAD
-  return db.query(queryString, queryParams)
-  .then((res) => {
-    const quizArray = [];
-    for (row of res.rows) {
-      quizArray.push(new Quiz(row.title, row.description, row.is_public))
-      quizArray[quizArray.length-1].setOwnerId(row.creator)
-      quizArray[quizArray.length-1].setQuizId(row.id)
-=======
   return db.query(queryString, queryParams).then((res) => {
     const quizArray = [];
     for (row of res.rows) {
       quizArray.push(new Quiz(row.title, row.description, row.is_public));
       quizArray[quizArray.length - 1].setOwnerId(row.creator);
       quizArray[quizArray.length - 1].setQuizId(row.id);
->>>>>>> master
     }
     return quizArray;
   });
@@ -259,11 +245,7 @@ exports.addQuiz = addQuiz;
 //! this only works with ascii characters for example 'Saīd' would need to be entered as U&'Sa\+012Bd which our db does not support'
 /**
  * Check to see if a username already exists in the database
-<<<<<<< HEAD
- * @param {string} username
-=======
  * @param {string} username - mandatory
->>>>>>> master
  * @returns {boolean} returns true if username already exists in database
  */
 const verifyUserName = function(username) {
@@ -283,15 +265,9 @@ exports.verifyUserName = verifyUserName;
 /**
  * Check to see if an email already exists in the database
  * @param {string} email
-<<<<<<< HEAD
- * @returns {boolean} returns true if either email or username already exists in database
- */
- const verifyEmail = function(email) {
-=======
  * @returns {boolean} returns true if email already exists in database
  */
 const verifyEmail = function(email) {
->>>>>>> master
   const queryParams = [getUserByEmail];
   const queryString = `
   SELECT * FROM users
@@ -305,16 +281,12 @@ const verifyEmail = function(email) {
 };
 exports.verifyEmail = verifyEmail;
 
-<<<<<<< HEAD
 /**
  * Insert a new user into the database
  * @param {object} newUser - object with username, email, password keys
  * @returns the new user id.
  */
  const addUser = function(newUser) {
-=======
-const addUser = function(newUser) {
->>>>>>> master
   const { username, email, password } = newUser;
   queryParams = [username, email, password];
   queryString = `
