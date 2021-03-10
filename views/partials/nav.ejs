@@ -10,20 +10,26 @@
       </li>
       <li class="nav-item"><a class="nav-link" href="/quizzes/random"><i class="fa fa-random"></i><span>Random
             Quiz</span></a></li>
-      <li class="nav-item"><a class="nav-link" href="/users/<%= username %>/quizzes "><i class="fa fa-user"></i><span>My
-            Quizzes</span></a>
-      </li>
-      <li class="nav-item"><a class="nav-link" href="/quizzes/new"><i class="fa fa-plus"></i><span>Quiz
-            Creator</span></a>
-      </li>
-      <li class="nav-item"><a class="nav-link" href="/sessions/new"><i
-            class="far fa-user-circle"></i><span>Login</span></a></li>
-      <li class="nav-item"><a class="nav-link" href="/users/new"><i
-            class="fas fa-user-circle"></i><span>Register</span></a></li>
-      <li class="nav-item">
-        <form class="form-inline nav-link" method="POST" action="/sessions?_method=DELETE"><i
-            class="fa fa-user-times"></i><span>Logout</span></form>
-      </li>
+      <% if (userName) { %>
+        <li class="nav-item"><a class="nav-link" href="/users/<%= userName %> /quizzes "><i
+              class="fa fa-user"></i><span>My
+              Quizzes</span></a>
+        </li>
+
+        <li class="nav-item"><a class="nav-link" href="/quizzes/new"><i class="fa fa-plus"></i><span>Quiz
+              Creator</span></a>
+        </li>
+        <li class="nav-item">
+          <form class="form-inline" method="POST" action="/sessions?_method=DELETE" type="submit"><button
+              class="btn nav-link" type="submit"><i class="fa fa-user-times"></i><span>Logout</span></button></form>
+        </li>
+        <% } else { %>
+          <li class="nav-item"><a class="nav-link" href="/sessions/new"><i
+                class="far fa-user-circle"></i><span>Login</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="/users/new"><i
+                class="fas fa-user-circle"></i><span>Register</span></a></li>
+
+          <% } %>
     </ul>
     <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle"
         type="button"></button></div>
