@@ -35,7 +35,7 @@ module.exports = (db) => {
     db.getUserByEmail(email).then((response) => {
       //response is a user object containing username, email, userId and password
       //If email does not exists in db then adios to 302
-      if (!response.email) {
+      if (!response && response.email) {
         return res.status(403).send("Sorry, this email does not exist");
       }
       //If email is true then check password
