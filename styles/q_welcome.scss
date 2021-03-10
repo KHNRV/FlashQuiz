@@ -20,12 +20,12 @@ p {
 h2 {
   font-family: "Bebas Neue", cursive;
 }
-.nav-link.active {
+.nav-link.active.tab_nav {
   font-family: "Bebas Neue", cursive;
   font-weight: normal;
   font-size: 24px;
 }
-.nav-link {
+.nav-link.tab_nav {
   font-family: "Bebas Neue", cursive;
   font-size: 24px;
   color: var(--gray-dark);
