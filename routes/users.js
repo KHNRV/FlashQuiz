@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-// ! require users db helper functions here
+
+// ! List of db helper functions utilized for this router
 //fetchUserNameById(userId)
-//verifyEmail(email) - check if an email exists
-//verifyUsername(username) - check if a userName exists
+//verifyEmail(email) - check if an email exists - boolean
+//verifyUsername(username) - check if a userName exists - boolean
 //addUser(newUser)
 //getQuizzesByUserId(userId)
 
@@ -20,67 +21,47 @@ const router = express.Router();
 module.exports = (db) => {
   //Route 1 - GET /users/new
   router.get("/new", (req, res) => {
-    //Need to capture the userId as it will be needed for our partial ejs templates so that the logged in userName stays visible across all tabs
-    //const userId = req.session.userId
-    //const userName = fetchUsername(userId)
-    //const templateVars = {userId}
-    //res.render("register.ejs", templateVars)
-
+    //If a logged in user enters this url then redirects to /quizzes
     const userId = req.session && req.session.userId;
-
-    // ! add conditionals on who can see this page i.e. if user alrdy logged in etc.
-    fetchUsernameById(userId) // ! discuss the cookie issue
-      .then((response) => {
-        const userName = response;
-        const templateVars = { userName };
-        res.render("./pages/register.ejs", templateVars); // Remove templatevars - not necessary
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    if (userId) {
+      return res.status(302).redirect("/quizzes");
+    }
+    res.render("./pages/register.ejs");
   });
 
   //Route 2 - POST /users
   router.post("/", (req, res) => {
-    //const {username, email, password} = req.body; data from the form
-    //Check if the email, user or password fields are empty & notify the user
-    //if(!email || !password || !username) return res.status(400).send("Invalid email address, username or password")
-    //if(verify(email)) return res.status(400).send("Email address already exists")
-    //if(verifyUserName(userName)) return res.status(400).send("Username already exists")
-    //password = bcrypt.hashSync(password, 12);  encrypt user's password
-    //newUser = {userName, email, password}
-    //addUser(newUser) function
-    //req.session.userId = user.id --> In the .then() - setup the cookie
-    //remember to include a .catch for all your db calls in all your functions
-    // ? Setup a delicious cookie ->Need to discuss various approach to this. I need to know the id of last user in db so I can increment or user Username for cookies in this app (not ideal)
-    //redirect to GET /quizzes
     const { username, email, password } = req.body;
+    //Check if there are any empty input fields
     if (!email || !password || !username) {
       return res
         .status(400)
-        .send("Empty email address, username and/or password field");
+        .send("Empty email address, username and/or password field(s)");
     }
-    //verifyEmail will check whether an email exists in the db or not
-    verifyEmail(email)
+    //verifyEmail will check whether an email or exists in the db or not
+    //verifyUserName will check whether a userName already exists in the db or not
+
+    const promise1 = db.verifyEmail(email).catch((res) => false);
+    const promise2 = db.verifyUserName(username).catch((res) => false);
+
+    //If either the username or email address already exists then send error message
+    Promise.all([promise1, promise2]).then((response) => {
+      if (!response[0])
+        return res.status(400).send("Oops, Email address already exists");
+      if (!response[1])
+        return res.send.status(400).send("Oops, Username already exists");
+    });
+
+    const newUser = {
+      email,
+      username,
+      password: bcrypt.hashSync(password, 10),
+    };
+
+    db.addUser(newUser) // ! Need to return the userId so that I can setup the cookie
       .then((response) => {
-        if (!response) {
-          return res.status(400).send("Email address already exists");
-        }
-        //VerifyUsername will check whether a userName exists in the db or not
-        verifyUsername(username).then((response) => {
-          if (!response) {
-            return res.status(400).send("Username address already exists");
-          }
-          const newUser = {
-            email,
-            username,
-            password: bcrypt.hashSync(password, 10),
-          };
-          addUser(newUser).then((response) => {
-            req.session.userId = userId; // ! We need to define what we setup for a cookie i.e. the userId only or whole user object? instead of userId use user? would make life easier in some situations.
-            res.status(302).redirect("/quizzes");
-          });
-        });
+        req.session.userId = userId;
+        res.status(302).redirect("/quizzes");
       })
       .catch((error) => {
         console.log(error);
@@ -89,21 +70,21 @@ module.exports = (db) => {
 
   //Route 3 - GET /:userId/quizzes
   router.get("/:userId/quizzes", (req, res) => {
-    //A user needs to be logged in in order to have access to this section
-    //const userId = req.session.userId else redirect to the login page
-    //getQuizzesByUserId(userId);
-    //Need to capture the response & send it back to FE as an array of personal quizzes
-    // res.render("myquizzes.ejs", templateVars);
-
+    //Objective of this route is to return the quizzes created by specific user
     const userId = req.session && req.session.userId;
     if (!userId) {
-      return res.redirect("/sessions/new");
+      return res.status(302).redirect("/sessions/new");
     }
-    getQuizzesByUserId(userId)
+
+    const promise1 = db.fetchUserNameById(userId);
+    const promise2 = db.getQuizzesByUserId(userId);
+
+    Promise.all([promise1, promise2])
       .then((response) => {
-        const myQuizzes = response;
-        const templateVars = { myQuizzes, userId };
-        res.render("./pages/myquizzes.ejs", templateVars); // ! userName, myQuizzes
+        const userName = response[0];
+        const myQuizzes = response[1];
+        const templateVars = { userName, myQuizzes };
+        res.render("./pages/myquizzes.ejs", templateVars);
       })
       .catch((error) => {
         console.log(error);
