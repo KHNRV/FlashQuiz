@@ -1,5 +1,4 @@
 //index.js -> all of the data helpers flow through this file
-const { Question } = require('../../public/classes/classes')
 const { getQuizzes, getLeaderboard, fetchQuizDetails, fetchQuizQuestions, addQuiz } = require("./quizData");
 const { fetchUserNameById, getUserByEmail, verifyUserName, verifyEmail, addUser } = require("./userData");
 const { startAttempt, finishAttempt } = require("./attemptData")

@@ -145,7 +145,7 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
  * Adds a Quiz to the database
  * @param {number} user_Id - mandatory
  * @param {Quiz} quiz - mandatory
- * @returns raw query response
+ * @returns new quiz_id
  */
  const addQuiz = function(user_Id, quiz) {
   quiz.setOwnerId(user_Id)

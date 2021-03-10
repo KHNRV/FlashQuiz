@@ -1,5 +1,4 @@
-//! Nick: "I refactored how the pool is required through database.js so that the dataHelpers can be more easily tested and required."
-const db = require("./dataHelpers");
+const db = require("./db/helpers/index");
 
 // Web server config
 const PORT = process.env.PORT || 8080;
