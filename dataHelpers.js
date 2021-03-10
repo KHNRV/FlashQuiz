@@ -283,14 +283,20 @@ exports.verifyUserName = verifyUserName;
 };
 exports.verifyEmail = verifyEmail;
 
-const addUser = function(username, email, password) {
+/**
+ * Insert a new user into the database
+ * @param {object} newUser - object with username, email, password keys
+ * @returns the new user id.
+ */
+ const addUser = function(newUser) {
+  const { username, email, password } = newUser;
   queryParams = [username, email, password];
   queryString = `
     INSERT INTO users (name, email, password)
     VALUES ($1, $2, $3)
-    RETURNING * ;
+    RETURNING *;
   `;
-  return db.query(queryString, queryParams).then((res) => res.rows[0]);
+  return db.query(queryString, queryParams).then((res) => res.rows[0].id);
 };
 exports.addUser = addUser;
 
