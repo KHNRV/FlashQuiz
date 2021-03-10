@@ -28,7 +28,7 @@ module.exports = (db, bcrypt) => {
     res.render("./pages/login.ejs");
   });
 
-  //Route 2 - POST /sessions // ! Does the login take both the email or username? If so, may need to use REGEX :).
+  //Route 2 - POST /sessions
   router.post("/", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -49,7 +49,6 @@ module.exports = (db, bcrypt) => {
       }
     });
   });
-
   //Route 3 - DELETE /sessions
   router.delete("/", (req, res) => {
     //method override will be used for this

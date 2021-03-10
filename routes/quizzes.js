@@ -65,35 +65,7 @@ module.exports = (db) => {
     }
   });
 
-  //Route 4 - GET /quizzes/:quizId
-  router.get("/:quizId/:publicId?", (req, res) => {
-    //If a user has a quiz link and is logged in; the user should be able to view it regardless of whether it is public or private
-    const userId = req.session && req.session.userId;
-    const quizId = req.params.quizId;
-    const publicId = req.params && req.params.publicId;
-
-      const promise1 = db.fetchAssembledQuiz({
-      questions: false,
-      quizId,
-      userId,
-      publicId,
-    });
-    const promise2 = db.fetchUserNameById(userId);
-
-    Promise.all([promise1, promise2])
-      .then((response) => {
-        if(!response[0]) {
-          return res.status(404).send("Resource does not exist");
-        }
-        const quiz = response[0];
-        const userName = response[1];
-        const templateVars = { quiz, userName };
-        res.render("./pages/q_welcome.ejs", templateVars);
-      })
-      .catch((error) => console.log(error));
-  });
-
-  //Route 5 - GET quizzes/:quizId/play
+  //Route 4 - GET quizzes/:quizId/play
   router.get("/:quizId/play", (req, res) => {
     //The objective of this route is to return the game engine (ejs) along with the data to populate a given session (i.e. associated to a quizID)
     const userId = req.session && req.session.userId;
@@ -104,16 +76,51 @@ module.exports = (db) => {
     if (!quizId) {
       return res.status(404).send("Resource does not exist");
     }
-    db.fetchAssembledQuiz({ questions: true, quizId, userId })
+
+    const promise1 = db.fetchAssembledQuiz({ questions: true, quizId, userId });
+    const promise2 = db.fetchUserNameById(userId);
+
+    Promise.all([promise1, promise2])
       .then((response) => {
-        if (!response) {
-          return res
-            .status(404)
-            .send("No quiz instance associated to this quizId");
+        if (!response[0]) {
+          const userName = response[1];
+          return res.status(404).render("./pages/error.ejs", { userName });
         }
-        const quiz = response;
-        const templateVars = { quiz };
+        const quiz = response[0];
+        const userName = response[1];
+        const templateVars = { quiz, userName };
         res.render("./pages/q_play.ejs", templateVars);
+      })
+      .catch((error) => console.log(error));
+  });
+
+  //Route 5 - GET /quizzes/:quizId/publicId?
+  router.get("/:quizId/:publicId?", (req, res) => {
+    //If a user has a quiz link and is logged in; the user should be able to view it regardless of whether it is public or private
+    const userId = req.session && req.session.userId;
+    const quizId = req.params.quizId;
+    const publicId = req.params && req.params.publicId;
+
+    const promise1 = db.fetchAssembledQuiz({
+      questions: false,
+      quizId,
+      userId,
+      publicId,
+    });
+    const promise2 = db.fetchUserNameById(userId);
+    const promise3 = db.fetchUserNameById(publicId);
+
+    Promise.all([promise1, promise2, promise3])
+      .then((response) => {
+        if (!response[0]) {
+          const userName = response[1];
+          return res.status(404).render("./pages/error.ejs", { userName });
+        }
+        const quiz = response[0];
+        const userName = response[1];
+        const publicId = response[2];
+        const templateVars = { quiz, userName, publicId };
+        res.render("./pages/q_welcome.ejs", templateVars);
       })
       .catch((error) => console.log(error));
   });
