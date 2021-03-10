@@ -1,12 +1,12 @@
-const db = require("../pool")
-const { Quiz, Question, Answer } = require('../../public/classes/classes');
+const db = require("../pool");
+const { Quiz, Question, Answer } = require("../../public/classes/classes");
 
 /**
  * Get all public quizzes, or a specific users public and private quizzes
  * @param {number} user_id -  optional
  * @returns {array} array of quiz objects
  */
- const getQuizzes = function(user_id) {
+const getQuizzes = function(user_id) {
   let queryString = `
     SELECT quizzes.id AS id,
     users.name AS creator,
@@ -24,7 +24,7 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
     queryString += `AND is_public = $1`;
     queryParams = ["TRUE"];
   }
-  queryString += `ORDER BY id DESC;`
+  queryString += `ORDER BY id DESC;`;
   return db.query(queryString, queryParams).then((res) => {
     const quizArray = [];
     for (row of res.rows) {
@@ -42,13 +42,13 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
  * @param {number} user_id - optional
  * @returns {[Quiz]]} an array of attempts ordered by score descending
  */
- const fetchLeaderboard = function(quiz_id, user_id) {
+const fetchLeaderboard = function(quiz_id, user_id) {
   const queryParams = [quiz_id];
   let queryString = `
   SELECT name,
   concat(num_correct * 100 / total_questions, '%') AS accuracy,
-  duration AS time,
-  num_correct * (0.8 + (1000000 - (date_part('microsecond', (duration) / max_duration))))/1000 AS computed_score
+  to_char(duration, 'MI:SS') AS time,
+  num_correct * (date_part('microsecond', (duration) / max_duration)) AS computed_score
   FROM (
     SELECT
     attempts.id,
@@ -84,7 +84,7 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
  * @param {number} quiz_id - mandatory
  * @returns {Quiz} returns a Quiz object with empty Leaderboard
  */
- const fetchQuizDetails = function(quiz_id) {
+const fetchQuizDetails = function(quiz_id) {
   const queryParams = [quiz_id];
   const queryString = `
   SELECT quizzes.id AS id,
@@ -97,10 +97,14 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
     WHERE quizzes.id = $1;`;
   return db.query(queryString, queryParams).then((res) => {
     if (res.rows.length) {
-      const quizData = res.rows[0]
-      const quiz = new Quiz(quizData.title, quizData.description, quizData.is_public);
-      quiz.setOwnerId(quizData.creator)
-      quiz.setQuizId(quizData.id)
+      const quizData = res.rows[0];
+      const quiz = new Quiz(
+        quizData.title,
+        quizData.description,
+        quizData.is_public
+      );
+      quiz.setOwnerId(quizData.creator);
+      quiz.setQuizId(quizData.id);
       return quiz;
     } else {
       return undefined;
@@ -113,7 +117,7 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
  * @param {number} quiz_id - mandatory
  * @returns {[Question]} An array of Questions
  */
- const fetchQuizQuestions = function(quiz_id) {
+const fetchQuizQuestions = function(quiz_id) {
   const queryParams = [quiz_id];
   const queryString = `
   SELECT prompt,
@@ -126,18 +130,21 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
   `;
   return db.query(queryString, queryParams).then((res) => {
     if (res.rows.length) {
-      const questionArray = res.rows.reduce((acc,cur)=>{
-        if (!acc.length || acc[acc.length-1].prompt !== cur.prompt) {
-          acc.push(new Question(cur.prompt, cur.time_limit))
-          acc[acc.length-1].answers.push(new Answer(cur.text, cur.is_correct));
+      const questionArray = res.rows.reduce((acc, cur) => {
+        if (!acc.length || acc[acc.length - 1].prompt !== cur.prompt) {
+          acc.push(new Question(cur.prompt, cur.time_limit));
+          acc[acc.length - 1].answers.push(
+            new Answer(cur.text, cur.is_correct)
+          );
         } else {
-          acc[acc.length-1].answers.push(new Answer(cur.text, cur.is_correct));
+          acc[acc.length - 1].answers.push(
+            new Answer(cur.text, cur.is_correct)
+          );
         }
         return acc;
-      },[]);
+      }, []);
       return questionArray;
-      }
-    else return undefined;
+    } else return undefined;
   });
 };
 
@@ -147,9 +154,14 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
  * @param {Quiz} quiz - mandatory
  * @returns new quiz_id
  */
- const addQuiz = function(user_Id, quiz) {
-  quiz.setOwnerId(user_Id)
-  const queryParams = [quiz.getOwnerId(), quiz.title, quiz.description, quiz.isPublic];
+const addQuiz = function(user_Id, quiz) {
+  quiz.setOwnerId(user_Id);
+  const queryParams = [
+    quiz.getOwnerId(),
+    quiz.title,
+    quiz.description,
+    quiz.isPublic,
+  ];
   let queryString = `
     INSERT INTO quizzes (owner_id, title, description, is_public)
     VALUES ($1, $2, $3, $4)
@@ -162,7 +174,7 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
     .then((quiz_id) => {
       queryParams.length = 0;
 
-      quiz.setQuizId(quiz_id)
+      quiz.setQuizId(quiz_id);
       queryParams.push(quiz.getQuizId());
       queryString = `INSERT INTO questions (quiz_id, prompt) VALUES`;
       const valuesArray = [];
@@ -183,12 +195,12 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
       const valuesArray = [];
 
       for (let i = 0; i < quiz.questions.length; i++) {
-        quiz.questions[i].setQuestionId(res.rows[i].id)
+        quiz.questions[i].setQuestionId(res.rows[i].id);
         queryParams.push(quiz.questions[i].getQuestionId());
         const qIDParam = `$${queryParams.length}`;
         for (answer of quiz.questions[i].answers) {
-          queryParams.push(answer.text)
-          queryParams.push(answer.is_correct)
+          queryParams.push(answer.text);
+          queryParams.push(answer.is_correct);
           valuesArray.push(
             ` (${qIDParam},$${queryParams.length - 1}, $${queryParams.length})`
           );
@@ -201,15 +213,21 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
     .then((res) => {
       queryParams.length = 0;
       queryParams.push(res.rows[0].question_id);
-      queryString =`
+      queryString = `
         SELECT quizzes.id FROM questions
         JOIN quizzes ON questions.quiz_id = quizzes.id
         WHERE questions.id = $1
         GROUP BY quizzes.id;
       `;
-      return db.query(queryString, queryParams)
+      return db.query(queryString, queryParams);
     })
-    .then(res=>res.rows[0].id);
+    .then((res) => res.rows[0].id);
 };
 
-module.exports = { getQuizzes, fetchLeaderboard, fetchQuizDetails, fetchQuizQuestions, addQuiz }
+module.exports = {
+  getQuizzes,
+  fetchLeaderboard,
+  fetchQuizDetails,
+  fetchQuizQuestions,
+  addQuiz,
+};
