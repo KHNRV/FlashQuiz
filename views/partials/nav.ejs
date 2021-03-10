@@ -4,20 +4,26 @@
       <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-rocket"></i></div>
       <div class="sidebar-brand-text mx-3"><span>FLASHQUIZ</span></div>
     </a>
-    <hr class="sidebar-divider my-0">
+    <hr class="sidebar-divider my-0" />
     <ul class="navbar-nav text-light" id="accordionSidebar">
-      <li class="nav-item"><a class="nav-link" href="table.html"><i class="fa fa-th-list"></i><span>Quiz
-            List</span></a></li>
-      <li class="nav-item"><a class="nav-link" href="table.html"><i class="fa fa-random"></i><span>Random
+      <li class="nav-item"><a class="nav-link" href="/"><i class="fa fa-th-list"></i><span>Quiz List</span></a>
+      </li>
+      <li class="nav-item"><a class="nav-link" href="/quizzes/random"><i class="fa fa-random"></i><span>Random
             Quiz</span></a></li>
-      <li class="nav-item"><a class="nav-link" href="profile.html"><i class="fa fa-user"></i><span>My
-            Quizzes</span></a></li>
-      <li class="nav-item"><a class="nav-link" href="table.html"><i class="fa fa-plus"></i><span>Quiz
-            Creator</span></a></li>
-      <li class="nav-item"><a class="nav-link" href="login.html"><i
+      <li class="nav-item"><a class="nav-link" href="/users/<%= username %>/quizzes "><i class="fa fa-user"></i><span>My
+            Quizzes</span></a>
+      </li>
+      <li class="nav-item"><a class="nav-link" href="/quizzes/new"><i class="fa fa-plus"></i><span>Quiz
+            Creator</span></a>
+      </li>
+      <li class="nav-item"><a class="nav-link" href="/sessions/new"><i
             class="far fa-user-circle"></i><span>Login</span></a></li>
-      <li class="nav-item"><a class="nav-link" href="register.html"><i
+      <li class="nav-item"><a class="nav-link" href="/users/new"><i
             class="fas fa-user-circle"></i><span>Register</span></a></li>
+      <li class="nav-item">
+        <form class="form-inline nav-link" method="POST" action="/sessions?_method=DELETE"><i
+            class="fa fa-user-times"></i><span>Logout</span></form>
+      </li>
     </ul>
     <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle"
         type="button"></button></div>
