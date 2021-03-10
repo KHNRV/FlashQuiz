@@ -25,8 +25,8 @@ class Quiz {
     })
   }
 
-  addLeaderboard(leaderboard) {
-    leaderboards.push(entry);
+  addLeaderboard(leaderboard, leaderboardType) {
+    leaderboard.forEach(v => this[leaderboardType].push(v));
   }
 
   getQuizId() {
