@@ -22,7 +22,7 @@
 
 <body id="page-top">
   <div id="wrapper">
-    <% include('../partials/nav.ejs') %>
+    <%- include('../partials/nav.ejs') %>
       <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
           <div class="container-fluid d-flex flex-column align-items-center">
@@ -35,13 +35,13 @@
                 class="fa fa-play-circle d-xl-flex justify-content-xl-center"></i></a>
           </div>
           <div class="container-fluid d-flex flex-column align-items-center" data-aos="zoom-in" data-aos-once="true">
-            <div>
+            <div class="leaderboard_tabs">
               <ul class="nav nav-tabs nav-fill" role="tablist">
-                <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-toggle="tab"
+                <li class="nav-item" role="presentation"><a class="nav-link active tab_nav" role="tab" data-toggle="tab"
                     href="#tab-1">FRIENDNAME</a></li>
-                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab"
+                <li class="nav-item" role="presentation"><a class="nav-link tab_nav" role="tab" data-toggle="tab"
                     href="#tab-2">EVERYONE</a></li>
-                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab"
+                <li class="nav-item" role="presentation"><a class="nav-link tab_nav" role="tab" data-toggle="tab"
                     href="#tab-3">YOU</a></li>
               </ul>
               <div class="tab-content">
@@ -105,10 +105,10 @@
             </div>
           </div>
         </div>
-        <% include('../partials/footer') %>
+        <%- include('../partials/footer') %>
       </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
   </div>
-  <% include('../partials/vendor_scripts') %>
+  <%- include('../partials/vendor_scripts') %>
 </body>
 
 </html>
