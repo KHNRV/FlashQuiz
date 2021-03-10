@@ -72,16 +72,19 @@ module.exports = (db) => {
     const quizId = req.params.quizId;
     const publicId = req.params && req.params.publicId;
 
-    const promise1 = db.fetchAssembledQuiz({
+      const promise1 = db.fetchAssembledQuiz({
       questions: false,
       quizId,
       userId,
       publicId,
     });
     const promise2 = db.fetchUserNameById(userId);
-    //! need to redirect when fetching an undefined quiz
+
     Promise.all([promise1, promise2])
       .then((response) => {
+        if(!response[0]) {
+          return res.status(404).send("Resource does not exist");
+        }
         const quiz = response[0];
         const userName = response[1];
         const templateVars = { quiz, userName };

@@ -55,12 +55,13 @@ const getQuizzes = function(user_id) {
     WHERE is_active IS TRUE
   `;
   if (user_id) {
-    queryString += `AND owner_id = $1;`;
+    queryString += `AND owner_id = $1`;
     queryParams = [user_id];
   } else {
-    queryString += `AND is_public = $1;`;
+    queryString += `AND is_public = $1`;
     queryParams = ["TRUE"];
   }
+  queryString += `ORDER BY id DESC;`
   return db.query(queryString, queryParams).then((res) => {
     const quizArray = [];
     for (row of res.rows) {
@@ -319,10 +320,10 @@ exports.addUser = addUser;
 
 // --- getQuizzes ---
 
-// getQuizzes()
-//   .then((data)=>console.log(data)); // expect: an array of 3 objects
-// getQuizzes(3)
-//  .then((data)=>console.log(data)); // expect: an array of 1 objects
+getQuizzes()
+  .then((data)=>console.log(data)); // expect: an array of 3 objects
+getQuizzes(3)
+ .then((data)=>console.log(data)); // expect: an array of 1 objects
 
 // --- getLeaderBoard ---
 
