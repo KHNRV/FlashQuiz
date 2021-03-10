@@ -1,0 +1,49 @@
+#play-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+.play-question-card {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  padding-left: 0px;
+  margin-right: 0;
+  max-width: 500px;
+  border-radius: 10px;
+}
+#play-body {
+  height: 100vh;
+}
+span {
+  color: var(--gray);
+}
+.fas.fa-rocket {
+  color: var(--gray);
+}
+.progress {
+  border-radius: 0px;
+  border-width: -22px;
+  border-style: none;
+}
+.btn.btn-primary {
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 12px;
+  border-radius: 45px;
+  border-width: 8px;
+}
+h3 {
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  color: var(--gray-dark);
+}
+.q_name_div {
+  margin-bottom: 24px;
+}
+.container-fluid {
+  padding-right: 24px;
+}

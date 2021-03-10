@@ -1,0 +1,39 @@
+.container-fluid {
+  padding-top: 48px;
+  padding-bottom: 24px;
+}
+h1 {
+  font-family: "Bebas Neue", cursive;
+}
+p {
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  color: var(--gray-dark);
+  font-size: 16px;
+  max-width: 480px;
+  padding-top: 24px;
+}
+.fa.fa-play-circle {
+  font-size: 100px;
+  color: rgb(24, 24, 25);
+}
+h2 {
+  font-family: "Bebas Neue", cursive;
+}
+.nav-link.active {
+  font-family: "Bebas Neue", cursive;
+  font-weight: normal;
+  font-size: 24px;
+}
+.nav-link {
+  font-family: "Bebas Neue", cursive;
+  font-size: 24px;
+  color: var(--gray-dark);
+}
+.leaderboard_tabs {
+  width: 100%;
+}
+
+.play_link {
+  color: rgba(78, 115, 223, 0);
+}
