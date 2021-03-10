@@ -57,7 +57,7 @@ app.use("/sessions", sessionsRoutes(db, bcrypt));
 // Warning: avoid creating more routes in this file!
 // Separate them into separate routes files (see above).
 app.get("/", (req, res) => {
-  res.render("pages/index"); // ? We could redirect to api/quizzes - it would be equivalent.
+  res.redirect("/quizzes"); // ? We could redirect to api/quizzes - it would be equivalent.
 });
 
 app.listen(PORT, () => {
