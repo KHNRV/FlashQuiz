@@ -20,7 +20,7 @@
 
 <body id="page-top">
   <div id="wrapper">
-    <% include('../partials/nav.ejs') %>
+    <%- include('../partials/nav.ejs') %>
       <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
           <div class="container-fluid" id="error">
@@ -30,14 +30,14 @@
               </div>
               <p class="text-dark mb-5 lead">Page Not Found</p>
               <p class="text-black-50 mb-0">It looks like you found a glitch in the matrix...</p><a href="/">← Back to
-                Dashboard</a>
+                the Quiz List</a>
             </div>
           </div>
         </div>
-        <% include('../partials/footer') %>
+        <%- include('../partials/footer') %>
       </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
   </div>
-  <% include('../partials/vendor_scripts') %>
+  <%- include('../partials/vendor_scripts') %>
 </body>
 
 </html>
