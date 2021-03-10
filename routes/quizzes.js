@@ -1,7 +1,6 @@
 const express = require("express");
-const { fetchQuizDetails, fetchQuizQuestions } = require("../dataHelpers");
 const router = express.Router();
-const bcrypt = require("bcrypt");
+
 // ! List of db helper functions utilized for this router
 //getPublicQuizzes()
 //addQuiz({userId, ...req.params})
@@ -73,16 +72,19 @@ module.exports = (db) => {
     const quizId = req.params.quizId;
     const publicId = req.params && req.params.publicId;
 
-    const promise1 = db.fetchAssembledQuiz({
+      const promise1 = db.fetchAssembledQuiz({
       questions: false,
       quizId,
       userId,
       publicId,
     });
     const promise2 = db.fetchUserNameById(userId);
-    //! need to redirect when fetching an undefined quiz
+
     Promise.all([promise1, promise2])
       .then((response) => {
+        if(!response[0]) {
+          return res.status(404).send("Resource does not exist");
+        }
         const quiz = response[0];
         const userName = response[1];
         const templateVars = { quiz, userName };
@@ -120,7 +122,7 @@ module.exports = (db) => {
   router.get("/:quizId/json", (req, res) => {
     //The objective of this route is to send to the FE a json representation of a specific quiz object
     const quizId = req.params.quizId;
-    fetchQuizQuestions(quizId).then((response) => {
+    db.fetchQuizQuestions(quizId).then((response) => {
       res.json(response);
     });
   });

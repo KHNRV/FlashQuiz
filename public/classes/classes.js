@@ -1,4 +1,4 @@
-//classes/quiz.js
+// classes.js
 
 class Quiz {
 
@@ -8,7 +8,7 @@ class Quiz {
     this.isPublic = isPublic;
     // Initialize a list of questions
     this.questions = [];
-    // Initialize leaderboard
+    // Initialize leaderboard arrays
     this.globalLeaderboard = [];
     this.personalLeaderboard = [];
     this.specifiedLeaderboard = [];
@@ -25,8 +25,8 @@ class Quiz {
     })
   }
 
-  addLeaderboard(leaderboard) {
-    leaderboards.push(entry);
+  addLeaderboard(leaderboard, leaderboardType) {
+    leaderboard.forEach(v => this[leaderboardType].push(v));
   }
 
   getQuizId() {
@@ -51,5 +51,47 @@ class Quiz {
 
 }
 
-module.exports = Quiz;
+class Question {
 
+  constructor(prompt, time_limit) {
+    this.prompt = prompt;
+    // Initialize a list of answers
+    this.answers = [];
+    if (time_limit === undefined) {
+      this.time_limit = null;
+    } else {
+      this.time_limit = time_limit;
+    }
+  }
+
+  addAnswer(answer) {
+    this.answers.push(answer);
+  }
+
+  randomizeAnswers() {
+    return this.Answers.sort(()=>{
+      //Returns a random integer between -1 and 1
+      return Math.floor((Math.random()*3) -1)
+    })
+  }
+
+  getQuestionId() {
+    return this._questionId;
+  }
+
+  setQuestionId(questionId) {
+    this._questionId = questionId;
+  }
+
+}
+
+class Answer {
+
+  constructor(text, is_correct) {
+    this.text = text;
+    this.is_correct = is_correct;
+  }
+
+}
+
+module.exports = { Quiz, Question, Answer };

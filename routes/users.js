@@ -78,7 +78,7 @@ module.exports = (db, bcrypt) => {
     }
 
     const promise1 = db.fetchUserNameById(userId);
-    const promise2 = db.getQuizzesByUserId(userId);
+    const promise2 = db.getQuizzes(userId);
 
     Promise.all([promise1, promise2])
       .then((response) => {
