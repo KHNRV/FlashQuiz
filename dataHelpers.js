@@ -1,4 +1,5 @@
 const db = require("./db/pool.js");
+const Quiz = require("./public/classes/quiz")
 
 //? add error handling to all dataHelpers.methods or is that on router?
 /**
@@ -42,7 +43,7 @@ exports.getUserByEmail = getUserByEmail;
 /**
  * Get all public quizzes, or a specific users public and private quizzes
  * @param {number} user_id -  optional
- * @returns {array} query response rows
+ * @returns {array} array of quiz objects
  */
 const getQuizzes = function(user_id) {
   let queryString = `
@@ -61,7 +62,16 @@ const getQuizzes = function(user_id) {
     queryString += `AND is_public = $1;`;
     queryParams = ["TRUE"];
   }
-  return db.query(queryString, queryParams).then((res) => res.rows);
+  return db.query(queryString, queryParams)
+  .then((res) => {
+    const quizArray = [];
+    for (row of res.rows) {
+      quizArray.push(new Quiz(row.title, row.description, row.is_public))
+      quizArray[quizArray.length-1].setOwnerId(row.creator)
+      quizArray[quizArray.length-1].setQuizId(row.id)
+    }
+    return quizArray;
+  });
 };
 exports.getQuizzes = getQuizzes;
 
@@ -236,24 +246,42 @@ exports.addQuiz = addQuiz;
 
 //! this only works with ascii characters for example 'Saīd' would need to be entered as U&'Sa\+012Bd which our db does not support'
 /**
- * Check to see if an email or username already exists in the database
- * @param {string} email
+ * Check to see if a username already exists in the database
  * @param {string} username
- * @returns {boolean} returns true if either email or username already exists in database
+ * @returns {boolean} returns true if username already exists in database
  */
-const authenticateForms = function(email, username) {
-  const queryParams = [email, username];
+const verifyUserName = function(username) {
+  const queryParams = [username];
   const queryString = `
   SELECT * FROM users
-  WHERE email = $1 OR name = $2;
+  WHERE name = $1;
   `;
 
   return db.query(queryString, queryParams).then((res) => {
-    if (res.rows.length) return true;
-    else return false;
+    if (res.rows.length) return false;
+    else return true;
   });
 };
-exports.authenticateForms = authenticateForms;
+exports.verifyUserName = verifyUserName;
+
+/**
+ * Check to see if an email already exists in the database
+ * @param {string} email
+ * @returns {boolean} returns true if either email or username already exists in database
+ */
+ const verifyEmail = function(email) {
+  const queryParams = [getUserByEmail];
+  const queryString = `
+  SELECT * FROM users
+  WHERE email = $1;
+  `;
+
+  return db.query(queryString, queryParams).then((res) => {
+    if (res.rows.length) return false;
+    else return true;
+  });
+};
+exports.verifyEmail = verifyEmail;
 
 const addUser = function(username, email, password) {
   queryParams = [username, email, password];
