@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/vendor/fontawesome5-overrides.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
-  <link rel="stylesheet" href="/vendor/login.css">
+  <link rel="stylesheet" href="/styles/login.css">
 </head>
 
 <body class="bg-gradient-primary">
@@ -30,10 +30,10 @@
               </div>
               <form class="user" method="POST" action="/sessions">
                 <div class="form-group"><input class="form-control form-control-user" type="email"
-                    aria-describedby="emailHelp" placeholder="Enter Email Address..." name="email">
+                    aria-describedby="emailHelp" placeholder="Enter Email Address..." name="email" required>
                 </div>
                 <div class="form-group"><input class="form-control form-control-user" type="password"
-                    placeholder="Password" name="password"></div><button
+                    placeholder="Password" name="password" required></div><button
                   class="btn btn-primary btn-block text-white btn-user" type="submit">Login</button>
               </form>
               <div class="text-center"><a class="small" href="/register.html">Create an Account!</a></div>
