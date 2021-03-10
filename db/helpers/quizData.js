@@ -42,7 +42,7 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
  * @param {number} user_id - optional
  * @returns {[Quiz]]} an array of attempts ordered by score descending
  */
- const getLeaderboard = function(quiz_id, user_id) {
+ const fetchLeaderboard = function(quiz_id, user_id) {
   const queryParams = [quiz_id];
   let queryString = `
   SELECT name,
@@ -212,4 +212,4 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
     .then(res=>res.rows[0].id);
 };
 
-module.exports = { getQuizzes, getLeaderboard, fetchQuizDetails, fetchQuizQuestions, addQuiz }
+module.exports = { getQuizzes, fetchLeaderboard, fetchQuizDetails, fetchQuizQuestions, addQuiz }

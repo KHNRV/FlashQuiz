@@ -1,5 +1,5 @@
 //index.js -> all of the data helpers flow through this file
-const { getQuizzes, getLeaderboard, fetchQuizDetails, fetchQuizQuestions, addQuiz } = require("./quizData");
+const { getQuizzes, fetchLeaderboard, fetchQuizDetails, fetchQuizQuestions, addQuiz } = require("./quizData");
 const { fetchUserNameById, getUserByEmail, verifyUserName, verifyEmail, addUser } = require("./userData");
 const { startAttempt, finishAttempt } = require("./attemptData")
 
@@ -18,16 +18,16 @@ const fetchAssembledQuiz = function(params) {
     promiseObject.questions = questionsPromise;
   }
 
-  const globalLeaderboardPromise = getLeaderboard(quizId);
+  const globalLeaderboardPromise = fetchLeaderboard(quizId);
   promiseObject.globalLeaderboard = globalLeaderboardPromise;
 
   if (userId) {
-    const personalLeaderboardPromise = getLeaderboard(quizId,userId);
+    const personalLeaderboardPromise = fetchLeaderboard(quizId,userId);
     promiseObject.personalLeaderboard = personalLeaderboardPromise;
   }
 
   if (publicId) {
-    const specifiedLeaderboardPromise = getLeaderboard(quizId, publicId);
+    const specifiedLeaderboardPromise = fetchLeaderboard(quizId, publicId);
     promiseObject.specifiedLeaderboard = specifiedLeaderboardPromise;
   }
 
