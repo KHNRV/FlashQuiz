@@ -53,7 +53,7 @@ exports.fetchAssembledQuiz = fetchAssembledQuiz;
 
 // --- quiz data ---
 exports.getQuizzes = getQuizzes;
-exports.getLeaderboard = getLeaderboard;
+exports.fetchLeaderboard = fetchLeaderboard;
 exports.fetchQuizDetails = fetchQuizDetails;
 exports.fetchQuizQuestions = fetchQuizQuestions;
 exports.addQuiz = addQuiz;
