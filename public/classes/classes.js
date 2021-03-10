@@ -53,10 +53,15 @@ class Quiz {
 
 class Question {
 
-  constructor(prompt) {
+  constructor(prompt, time_limit) {
     this.prompt = prompt;
     // Initialize a list of answers
     this.answers = [];
+    if (time_limit === undefined) {
+      this.time_limit = null;
+    } else {
+      this.time_limit = time_limit;
+    }
   }
 
   addAnswer(answer) {
@@ -82,10 +87,9 @@ class Question {
 
 class Answer {
 
-  constructor(answer,is_correct, time_limit) {
-    this.answer = answer;
+  constructor(text, is_correct) {
+    this.text = text;
     this.is_correct = is_correct;
-    this.time_limit = time_limit
   }
 
 }

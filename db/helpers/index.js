@@ -52,8 +52,6 @@ const fetchAssembledQuiz = function(params) {
 };
 exports.fetchAssembledQuiz = fetchAssembledQuiz;
 
-fetchAssembledQuiz({questions: true, quizId: 1, userId: 1, publicId: 2}).then(data=>console.log(data))
-
 // --- quiz data ---
 exports.getQuizzes = getQuizzes;
 exports.getLeaderboard = getLeaderboard;

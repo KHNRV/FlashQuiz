@@ -117,7 +117,7 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
   const queryParams = [quiz_id];
   const queryString = `
   SELECT prompt,
-    text AS answer,
+    text,
     is_correct,
     time_limit
     FROM questions
@@ -128,10 +128,10 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
     if (res.rows.length) {
       const questionArray = res.rows.reduce((acc,cur)=>{
         if (!acc.length || acc[acc.length-1].prompt !== cur.prompt) {
-          acc.push(new Question(cur.prompt))
-          acc[acc.length-1].answers.push(new Answer(cur.answer, cur.is_correct, cur.time_limit));
+          acc.push(new Question(cur.prompt, cur.time_limit))
+          acc[acc.length-1].answers.push(new Answer(cur.text, cur.is_correct));
         } else {
-          acc[acc.length-1].answers.push(new Answer(cur.answer, cur.is_correct, cur.time_limit));
+          acc[acc.length-1].answers.push(new Answer(cur.text, cur.is_correct));
         }
         return acc;
       },[]);
@@ -148,7 +148,8 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
  * @returns raw query response
  */
  const addQuiz = function(user_Id, quiz) {
-  const queryParams = [user_Id, quiz.title, quiz.description, quiz.is_public];
+  quiz.setOwnerId(user_Id)
+  const queryParams = [quiz.getOwnerId(), quiz.title, quiz.description, quiz.isPublic];
   let queryString = `
     INSERT INTO quizzes (owner_id, title, description, is_public)
     VALUES ($1, $2, $3, $4)
@@ -161,7 +162,8 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
     .then((quiz_id) => {
       queryParams.length = 0;
 
-      queryParams.push(quiz_id);
+      quiz.setQuizId(quiz_id)
+      queryParams.push(quiz.getQuizId());
       queryString = `INSERT INTO questions (quiz_id, prompt) VALUES`;
       const valuesArray = [];
 
@@ -181,13 +183,12 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
       const valuesArray = [];
 
       for (let i = 0; i < quiz.questions.length; i++) {
-        queryParams.push(res.rows[i].id);
+        quiz.questions[i].setQuestionId(res.rows[i].id)
+        queryParams.push(quiz.questions[i].getQuestionId());
         const qIDParam = `$${queryParams.length}`;
         for (answer of quiz.questions[i].answers) {
-          console.log(
-            queryParams[queryParams.length - 2],
-            queryParams[queryParams.length - 1]
-          );
+          queryParams.push(answer.text)
+          queryParams.push(answer.is_correct)
           valuesArray.push(
             ` (${qIDParam},$${queryParams.length - 1}, $${queryParams.length})`
           );
@@ -197,7 +198,18 @@ const { Quiz, Question, Answer } = require('../../public/classes/classes');
 
       return db.query(queryString, queryParams);
     })
-    .then((res) => res.rows);
+    .then((res) => {
+      queryParams.length = 0;
+      queryParams.push(res.rows[0].question_id);
+      queryString =`
+        SELECT quizzes.id FROM questions
+        JOIN quizzes ON questions.quiz_id = quizzes.id
+        WHERE questions.id = $1
+        GROUP BY quizzes.id;
+      `;
+      return db.query(queryString, queryParams)
+    })
+    .then(res=>res.rows[0].id);
 };
 
 module.exports = { getQuizzes, getLeaderboard, fetchQuizDetails, fetchQuizQuestions, addQuiz }
