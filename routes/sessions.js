@@ -1,15 +1,15 @@
 const express = require("express");
 const router = express.Router();
-// ! require cookie session npm package here
-// ! require sessions db helper functions here
-//getUsernameById(userId);
-//getUserByEmail(userId);
+
+// ! List of db helper functions utilized for this router
+////getUsernameById(userId);
+//getUserByEmail(email); returns a user object containing username, email, userId and password
 
 /*
   List of sessions Routes/Endpoints:
   1 - GET /sessions/new -> Displays the Login page
   2 - POST /sessions -> Creates a new session (i.e. logged in)
-  3 - DELETE / sessions -> Deletes the current session (i.e.) - will use method override for this.
+  3 - DELETE / sessions -> Deletes the current session (i.e. logout) - will use method override for this.
 
   NOTE: We could remove the "s" from sessions
   as there will never be more than a 'session'
@@ -20,29 +20,42 @@ const router = express.Router();
 module.exports = (db) => {
   //Route 1 - GET /sessions/new
   router.get("/new", (req, res) => {
-    //! add conditionals on whether this is invisible or not - userName not required.
-    //Capture the cookie and get userName here for consistency for the ejs partials
-    //const userId = req.session.userId;
-    //getUserName(userId) & insert in templateVars
-    //res.render("login.ejs", templateVars)
     const userId = req.session && req.session.userId;
-    const templateVars = { userId };
-    res.render("login.ejs", templateVars);
+    //If a logged in user enters this url then redirects to /quizzes
+    if (userId) {
+      return res.status(302).redirect("/quizzes");
+    }
+    res.render("./pages/login.ejs");
   });
 
-  //Route 2 - POST /sessions
+  //Route 2 - POST /sessions // ! Does the login take both the email or username? If so, may need to use REGEX :).
   router.post("/", (req, res) => {
-    //If any of the email or userName does not exists in db then adios to 302
-    //If email or userName is true then check password
-    //If password is valid then redirect to GET /quizzes
-    //Else adios to 403 res.status(403).send("Sorry, this password is not valid")
+    const email = req.body.email;
+    const password = req.body.password;
+    db.getUserByEmail(email).then((response) => {
+      //response is a user object containing username, email, userId and password
+      //If email does not exists in db then adios to 302
+      if (!response.email) {
+        return res.status(403).send("Sorry, this email does not exist");
+      }
+      //If email is true then check password
+      //If password is valid then redirect to GET /quizzes
+      if (bcrypt.compareSync(password, response.password)) {
+        req.session.userId = userId;
+        res.redirect("/quizzes");
+      } else {
+        //else return wrong password & adios to 403
+        return res.status(403).send("Sorry, this password is not valid");
+      }
+    });
   });
 
   //Route 3 - DELETE /sessions
   router.delete("/", (req, res) => {
     //method override will be used for this
-    // clear cookies session i.e. res.session.userId = null;
-    //redirect to public quizzes
+    // clear cookies session then redirect
+    req.session.userId = null;
+    res.redirect("/quizzes");
   });
 
   return router;
