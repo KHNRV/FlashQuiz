@@ -4,78 +4,73 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-  <title>Blank Page - Brand</title>
-  <link rel="stylesheet" href="vendor/bootstrap.min.css">
+  <title>New Quiz - FLASHQUIZ</title>
+  <link rel="stylesheet" href="/vendor/bootstrap.min.css">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bebas+Neue">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
-  <link rel="stylesheet" href="styles/create.css">
+  <link rel="stylesheet" href="/vendor/fontawesome5-overrides.min.css">
+  <link rel="stylesheet" href="/styles/create.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
 </head>
 
 <body id="page-top">
   <div id="wrapper">
-    <!-- TODO - Insert nav.ejs template -->
-    <div class="d-flex flex-column" id="content-wrapper">
-      <div id="content">
-        <div class="container-fluid">
-          <h1 class="text-center text-dark mb-1">Rocket Science<br>Rocket Speed</h1>
-        </div>
-        <form class="d-flex flex-column align-items-center">
-          <div class="card shadow border-left-primary py-2 create_card" data-aos="flip-up" data-aos-delay="250"
-            data-aos-once="true">
-            <div class="card-body"><span class="card_type">QUIZ INFORMATION</span>
-              <div class="form-group"><label class="input_type">TITLE</label><input
-                  class="border rounded-pill border-primary form-control visible" type="text" name="title"
-                  placeholder="Give a name to your quiz" required="" maxlength="255"></div>
-              <div class="form-group"><label class="input_type">DESCRIPTION</label><textarea
-                  class="border rounded-pill border-primary form-control" spellcheck="true" wrap="soft"
-                  placeholder="What's your quiz about?" maxlength="150" required="" name="description"></textarea></div>
-            </div>
+    <% include('../partials/nav') %>
+      <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+          <div class="container-fluid">
+            <h1 class="text-center text-dark mb-1">Rocket Science<br>Rocket Speed</h1>
           </div>
-          <div class="card shadow border-left-primary py-2 create_card" data-aos="flip-up" data-aos-delay="250"
-            data-aos-once="true">
-            <div class="card-body"><span class="card_type">QUESTION 1</span>
-              <div class="form-group"><label class="input_type">QUESTION</label><input
-                  class="border rounded-pill border-primary form-control visible" type="text" name="title"
-                  placeholder="Give a name to your quiz" required="" maxlength="255"></div>
-              <div class="form-group"><label class="input_type">CORRECT ANSWER</label><input
-                  class="border rounded-pill border-primary form-control visible" type="text" name="correct"
-                  placeholder="Write the correct answer" required="" maxlength="255"></div>
-              <div class="form-group"><label class="input_type">WRONG ANSWER (1/3)</label><input
-                  class="border rounded-pill border-primary form-control visible" type="text" name="wrong_1"
-                  placeholder="Write a lie" required="" maxlength="255"></div>
-              <div class="form-group"><label class="input_type">WRONG ANSWER (2/3)</label><input
-                  class="border rounded-pill border-primary form-control visible" type="text" name="wrong_2"
-                  placeholder="Write a lie" required="" maxlength="255"></div>
-              <div class="form-group"><label class="input_type">WRONG ANSWER (3/3)</label><input
-                  class="border rounded-pill border-primary form-control visible" type="text" name="wrong_3"
-                  placeholder="Write a lie" required="" maxlength="255"></div>
+          <form class="d-flex flex-column align-items-center" method="POST" action="/quizzes">
+            <div class="card shadow border-left-primary py-2 create_card" data-aos="flip-up" data-aos-delay="250"
+              data-aos-once="true">
+              <div class="card-body"><span class="card_type">QUIZ INFORMATION</span>
+                <div class="form-group"><label class="input_type">TITLE</label><input
+                    class="border rounded-pill border-primary form-control visible" type="text" name="title"
+                    placeholder="Give a name to your quiz" required="" maxlength="255"></div>
+                <div class="form-group"><label class="input_type">DESCRIPTION</label><textarea
+                    class="border rounded-pill border-primary form-control" spellcheck="true" wrap="soft"
+                    placeholder="What's your quiz about?" maxlength="150" required="" name="description"></textarea>
+                </div>
+              </div>
             </div>
-          </div>
-        </form>
-        <div class="d-flex flex-column align-items-center"><i
-            class="fa fa-plus-circle d-xl-flex justify-content-xl-center"
-            style="font-size: 50px;color: var(--blue);font-weight: bold;text-align: center;"></i></div>
-      </div>
-      <footer class="bg-white sticky-footer">
-        <div class="container my-auto">
-          <div class="text-center my-auto copyright"><span>Copyright © FlashQuiz 2021</span></div>
+            <div class="container d-flex flex-column align-items-center" id="questions_container">
+              <div class="card shadow border-left-primary py-2 create_card" data-aos="flip-up" data-aos-delay="250"
+                data-aos-once="true">
+                <div class="card-body"><span class="card_type">QUESTION 1</span>
+                  <div class="form-group"><label class="input_type">QUESTION</label><input
+                      class="border rounded-pill border-primary form-control visible" type="text" name="prompt"
+                      placeholder="Give a name to your quiz" required="" maxlength="255"></div>
+                  <div class="form-group"><label class="input_type">CORRECT ANSWER</label><input
+                      class="border rounded-pill border-primary form-control visible" type="text" name="correct"
+                      placeholder="Write the correct answer" required="" maxlength="255"></div>
+                  <div class="form-group"><label class="input_type">WRONG ANSWER (1/3)</label><input
+                      class="border rounded-pill border-primary form-control visible" type="text" name="wrong_1"
+                      placeholder="Write a lie" required="" maxlength="255"></div>
+                  <div class="form-group"><label class="input_type">WRONG ANSWER (2/3)</label><input
+                      class="border rounded-pill border-primary form-control visible" type="text" name="wrong_2"
+                      placeholder="Write a lie" required="" maxlength="255"></div>
+                  <div class="form-group"><label class="input_type">WRONG ANSWER (3/3)</label><input
+                      class="border rounded-pill border-primary form-control visible" type="text" name="wrong_3"
+                      placeholder="Write a lie" required="" maxlength="255"></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex flex-column align-items-center"><i
+                class="fa fa-plus-circle d-xl-flex justify-content-xl-center" id="add_question"></i></div><button
+              class="btn btn-primary btn-lg" id="submit_new_quiz" type="submit">Create Quiz</button>
+          </form>
         </div>
-      </footer>
-    </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        <% include('../partials/footer') %>
+
+      </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
-  <script src="vendor/bs-init.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
-  <script src="vendor/theme.js"></script>
+  <% include('../partials/vendor_scripts') %>
 </body>
 
 </html>
