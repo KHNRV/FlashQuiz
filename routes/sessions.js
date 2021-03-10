@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+// const bcrypt = require("bcrypt");
 // ! List of db helper functions utilized for this router
 ////getUsernameById(userId);
 //getUserByEmail(email); returns a user object containing username, email, userId and password
@@ -17,7 +17,7 @@ const router = express.Router();
   in relation to the restful convention
 */
 
-module.exports = (db) => {
+module.exports = (db, bcrypt) => {
   //Route 1 - GET /sessions/new
   router.get("/new", (req, res) => {
     const userId = req.session && req.session.userId;
@@ -41,7 +41,7 @@ module.exports = (db) => {
       //If email is true then check password
       //If password is valid then redirect to GET /quizzes
       if (bcrypt.compareSync(password, response.password)) {
-        req.session.userId = userId;
+        req.session.userId = response.id;
         res.redirect("/quizzes");
       } else {
         //else return wrong password & adios to 403

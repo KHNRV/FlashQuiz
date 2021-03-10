@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+// const bcrypt = require("bcrypt");
 
 // ! List of db helper functions utilized for this router
 //fetchUserNameById(userId)
@@ -18,7 +19,7 @@ const router = express.Router();
 
 */
 
-module.exports = (db) => {
+module.exports = (db, bcrypt) => {
   //Route 1 - GET /users/new
   router.get("/new", (req, res) => {
     //If a logged in user enters this url then redirects to /quizzes
@@ -60,7 +61,7 @@ module.exports = (db) => {
 
     db.addUser(newUser) // ! Need to return the userId so that I can setup the cookie
       .then((response) => {
-        req.session.userId = userId;
+        req.session.userId = response;
         res.status(302).redirect("/quizzes");
       })
       .catch((error) => {
