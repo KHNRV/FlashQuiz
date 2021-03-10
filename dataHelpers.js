@@ -49,7 +49,8 @@ const getQuizzes = function(user_id) {
     SELECT quizzes.id AS id,
     users.name AS creator,
     title,
-    description
+    description,
+    is_public
     FROM quizzes
     JOIN users ON owner_id = users.id
     WHERE is_active IS TRUE
@@ -320,10 +321,10 @@ exports.addUser = addUser;
 
 // --- getQuizzes ---
 
-getQuizzes()
-  .then((data)=>console.log(data)); // expect: an array of 3 objects
-getQuizzes(3)
- .then((data)=>console.log(data)); // expect: an array of 1 objects
+// getQuizzes()
+//   .then((data)=>console.log(data)); // expect: an array of 3 objects
+// getQuizzes(3)
+//  .then((data)=>console.log(data)); // expect: an array of 1 objects
 
 // --- getLeaderBoard ---
 
