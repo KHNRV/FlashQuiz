@@ -26,81 +26,103 @@
       <div class="d-flex flex-column" id="content-wrapper">
         <div id="content">
           <div class="container-fluid d-flex flex-column align-items-center">
-            <h1 class="text-center text-dark mb-1">THE SUPER FAST QUIZ</h1>
-            <p class="text-center"><strong>diam quis enim lobortis scelerisque fermentum dui faucibus in ornare quam
-                viverra orci sagittis eu volutpat odio facilisis mauris sit amet massa vitae tortor condimentum lacinia
-                quis vel eros donec ac odio tempor orci dapibus ultrices in iaculis nunc sed augue lacus viverra vitae
-                congue eu consequat ac felis donec</strong></p>
-            <a class="play_link" href="/quizzes/<%= quiz.quizId %>/play "><i
+            <h1 class="text-center text-dark mb-1">
+              <%= quiz.title _%>
+            </h1>
+            <p class="text-center"><strong>
+                <%= quiz.description _%>
+              </strong></p>
+            <a class="play_link" href="/quizzes/<%= quiz._quizId %>/play "><i
                 class="fa fa-play-circle d-xl-flex justify-content-xl-center"></i></a>
           </div>
           <div class="container-fluid d-flex flex-column align-items-center" data-aos="zoom-in" data-aos-once="true">
             <div class="leaderboard_tabs">
               <ul class="nav nav-tabs nav-fill" role="tablist">
-                <li class="nav-item" role="presentation"><a class="nav-link active tab_nav" role="tab" data-toggle="tab"
-                    href="#tab-1">FRIENDNAME</a></li>
-                <li class="nav-item" role="presentation"><a class="nav-link tab_nav" role="tab" data-toggle="tab"
-                    href="#tab-2">EVERYONE</a></li>
-                <li class="nav-item" role="presentation"><a class="nav-link tab_nav" role="tab" data-toggle="tab"
-                    href="#tab-3">YOU</a></li>
+                <% if (quiz.specifiedLeaderboard.length) { %>
+                  <li class="nav-item" role="presentation"><a class="nav-link active tab_nav" role="tab"
+                      data-toggle="tab" href="#tab-specified">FRIENDNAME</a></li>
+                  <% } %>
+
+                    <% if (quiz.globalLeaderboard.length) { %>
+                      <li class="nav-item" role="presentation"><a
+                          class="nav-link <%= quiz.specifiedLeaderboard.length ? "" : " active" %> tab_nav" role="tab"
+                          data-toggle="tab" href="#tab-global">EVERYONE</a></li>
+                      <% } %>
+
+                        <% if (quiz.personalLeaderboard.length) { %>
+                          <li class=" nav-item" role="presentation"><a class="nav-link tab_nav" role="tab"
+                              data-toggle="tab" href="#tab-personal">YOU</a></li>
+                          <% } %>
               </ul>
               <div class="tab-content">
-                <div class="tab-pane active" role="tabpanel" id="tab-1">
-                  <div class="table-responsive table-borderless">
-                    <table class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Username</th>
-                          <th>Accuracy</th>
-                          <th>Time</th>
-                          <th>Points</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <!-- TODO: Insert Row -->
-                      </tbody>
-                    </table>
+                <% if (quiz.specifiedLeaderboard.length) { %>
+                  <div class="tab-pane active" role="tabpanel" id="tab-specified">
+                    <div class="table-responsive table-borderless">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Username</th>
+                            <th>Accuracy</th>
+                            <th>Time</th>
+                            <th>Points</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% quiz.specifiedLeaderboard.forEach((row, index)=> { %>
+                            <%- include('../partials/leaderboard_row.ejs', {row: row, index: index}) %>
+                              <% }) %>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-                <div class="tab-pane" role="tabpanel" id="tab-2">
-                  <div class="table-responsive table-borderless">
-                    <table class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Username</th>
-                          <th>Accuracy</th>
-                          <th>Time</th>
-                          <th>Points</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <!-- TODO: Insert Row -->
+                  <% } %>
+                    <% if (quiz.globalLeaderboard.length) { %>
+                      <div class="tab-pane <%= quiz.specifiedLeaderboard.length ? "" : " active" %>" role="tabpanel"
+                        id="tab-global">
+                        <div class="table-responsive table-borderless">
+                          <table class="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Username</th>
+                                <th>Accuracy</th>
+                                <th>Time</th>
+                                <th>Points</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% quiz.globalLeaderboard.forEach((row, index)=> { %>
+                                <%- include('../partials/leaderboard_row.ejs', {row: row, index: index}) %>
+                                  <% }) %>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <% } %>
+                        <% if (quiz.personalLeaderboard.length) { %>
+                          <div class="tab-pane" role="tabpanel" id="tab-personal">
+                            <div class="table-responsive table-borderless">
+                              <table class="table table-bordered">
+                                <thead>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>Username</th>
+                                    <th>Accuracy</th>
+                                    <th>Time</th>
+                                    <th>Points</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <% quiz.personalLeaderboard.forEach((row, index)=> { %>
+                                    <%- include('../partials/leaderboard_row.ejs', {row: row, index: index}) %>
+                                      <% }) %>
 
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div class="tab-pane" role="tabpanel" id="tab-3">
-                  <div class="table-responsive table-borderless">
-                    <table class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th>Username</th>
-                          <th>Accuracy</th>
-                          <th>Time</th>
-                          <th>Points</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <!-- TODO: Insert Row -->
-
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <% } %>
               </div>
             </div>
           </div>
