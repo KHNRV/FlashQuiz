@@ -18,7 +18,8 @@ const submitQuiz = function(event) {
   const wrongAnswers2 = $("[name='wrong_2']");
   const wrongAnswers3 = $("[name='wrong_3']");
 
-  const quiz = new Quiz(title, description, !isPublic);
+  const quiz = new Quiz();
+  quiz.addQuizDetails(title, description, !isPublic);
 
   //iterate over jQuery "arrays" and create associated classes as they are added to the quiz
   for (let i = 0; i < prompts.length; i++) {

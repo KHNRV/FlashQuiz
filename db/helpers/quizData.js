@@ -28,9 +28,11 @@ const getQuizzes = function(user_id) {
   return db.query(queryString, queryParams).then((res) => {
     const quizArray = [];
     for (row of res.rows) {
-      quizArray.push(new Quiz(row.title, row.description, row.is_public));
-      quizArray[quizArray.length - 1].setOwnerId(row.creator);
-      quizArray[quizArray.length - 1].setQuizId(row.id);
+      const newQuiz = new Quiz();
+      newQuiz.addQuizDetails(row.title, row.description, row.is_public);
+      newQuiz.setOwnerId(row.creator);
+      newQuiz.setQuizId(row.id);
+      quizArray.push(newQuiz);
     }
     return quizArray;
   });
@@ -97,7 +99,8 @@ const fetchQuizDetails = function(quiz_id) {
   return db.query(queryString, queryParams).then((res) => {
     if (res.rows.length) {
       const quizData = res.rows[0];
-      const quiz = new Quiz(
+      const quiz = new Quiz;
+      quiz.addQuizDetails(
         quizData.title,
         quizData.description,
         quizData.is_public

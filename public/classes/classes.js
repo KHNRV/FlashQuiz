@@ -1,10 +1,7 @@
 // classes.js
 
 class Quiz {
-  constructor(title, description, isPublic) {
-    this.title = title;
-    this.description = description;
-    this.isPublic = isPublic;
+  constructor() {
     // Initialize a list of questions
     this.questions = [];
     // Initialize leaderboard arrays
@@ -13,14 +10,38 @@ class Quiz {
     this.specifiedLeaderboard = [];
   }
 
+  initializeFromJSON(JSONObject) {
+    this.addQuizDetails(JSONObject.title, JSONObject.description, JSONObject.isPublic);
+
+    for (const question of JSONObject.questions) {
+      const newQuestion = new Question(question.prompt)
+      for (const answer of question.answers) {
+        newQuestion.addAnswer(new Answer(answer.text, answer.is_correct));
+      }
+      this.addQuestion(newQuestion);
+    }
+
+    this.addLeaderboard(JSONObject.globalLeaderboard, "globalLeaderboard");
+
+    this.addLeaderboard(JSONObject.personalLeaderboard, "personalLeaderboard");
+
+    this.addLeaderboard(JSONObject.specifiedLeaderboard, "specifiedLeaderboard");
+
+  }
+
+  addQuizDetails(title, description, isPublic) {
+    this.title = title;
+    this.description = description;
+    this.isPublic = isPublic;
+  }
+
   addQuestion(question) {
     this.questions.push(question);
   }
 
   randomizeQuestions() {
     return this.questions.sort(() => {
-      //Returns a random integer between -1 and 1
-      return Math.floor(Math.random() * 3 - 1);
+      return Math.random() - 0.5;
     });
   }
 
@@ -66,9 +87,8 @@ class Question {
   }
 
   randomizeAnswers() {
-    return this.Answers.sort(() => {
-      //Returns a random integer between -1 and 1
-      return Math.floor(Math.random() * 3 - 1);
+    return this.answers.sort(() => {
+      return Math.random() - 0.5;
     });
   }
 
