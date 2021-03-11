@@ -17,12 +17,7 @@
 #play-body {
   height: 100vh;
 }
-span {
-  color: var(--gray);
-}
-.fas.fa-rocket {
-  color: var(--gray);
-}
+
 .progress {
   border-radius: 0px;
   border-width: -22px;
@@ -46,4 +41,12 @@ h3 {
 }
 .container-fluid {
   padding-right: 24px;
+}
+.is_correct:active:after {
+  background-color: var(--green);
+  border-color: var(--green);
+}
+
+.logo{
+  color: var(--gray);
 }
