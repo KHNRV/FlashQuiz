@@ -37,13 +37,10 @@ module.exports = (db) => {
 
   // Route 2 - POST /quizzes
   router.post("/", (req, res) => {
-    console.log(req.body);
     const userId = req.session && req.session.userId;
     if (!userId) {
       return res.status(401).redirect("/sessions/new");
     }
-    console.log(req.body); //! nick added
-
     const quiz = req.body;
 
     db.addQuiz(userId, quiz)
