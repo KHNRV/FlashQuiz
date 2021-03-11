@@ -41,7 +41,9 @@ module.exports = (db) => {
     if (!userId) {
       return res.status(401).redirect("/sessions/new");
     }
-    db.addQuiz({ userId, ...req.body })
+    const quiz = req.body;
+
+    db.addQuiz(userId, quiz)
       .then((response) => {
         res.redirect("/quizzes");
       })

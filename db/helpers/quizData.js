@@ -28,9 +28,11 @@ const getQuizzes = function(user_id) {
   return db.query(queryString, queryParams).then((res) => {
     const quizArray = [];
     for (row of res.rows) {
-      quizArray.push(new Quiz(row.title, row.description, row.is_public));
-      quizArray[quizArray.length - 1].setOwnerId(row.creator);
-      quizArray[quizArray.length - 1].setQuizId(row.id);
+      const newQuiz = new Quiz();
+      newQuiz.addQuizDetails(row.title, row.description, row.is_public);
+      newQuiz.setOwnerId(row.creator);
+      newQuiz.setQuizId(row.id);
+      quizArray.push(newQuiz);
     }
     return quizArray;
   });
@@ -48,21 +50,20 @@ const fetchLeaderboard = function(quiz_id, user_id) {
   SELECT name,
   concat(num_correct * 100 / total_questions, '%') AS accuracy,
   to_char(duration, 'MI:SS') AS time,
-  num_correct * (date_part('microsecond', (duration) / max_duration)) AS computed_score
-  FROM (
-    SELECT
-    attempts.id,
-    name,
-    end_time - start_time AS duration,
-    SUM(questions.time_limit / 1000) max_duration,
-    num_correct,
-    COUNT(questions.*) AS total_questions
-    FROM attempts
-    JOIN quizzes ON attempts.quiz_id = quizzes.id
-    JOIN questions ON questions.quiz_id = quizzes.id
-    JOIN users ON attempts.user_id = users.id
-    WHERE end_time IS NOT NULL AND quizzes.id = $1
-
+  floor((((num_correct / total_questions) * 800000) + (num_correct * (1000000 - (date_part('microsecond', (duration) / max_duration)))))*.01) AS computed_score
+    FROM (
+      SELECT
+      attempts.id,
+      name,
+      end_time - start_time AS duration,
+      SUM(questions.time_limit / 1000) max_duration,
+      num_correct,
+      COUNT(questions.*) AS total_questions
+      FROM attempts
+      JOIN quizzes ON attempts.quiz_id = quizzes.id
+      JOIN questions ON questions.quiz_id = quizzes.id
+      JOIN users ON attempts.user_id = users.id
+      WHERE end_time IS NOT NULL AND quizzes.id = $1
   `;
   if (user_id) {
     queryParams.push(user_id);
@@ -98,7 +99,8 @@ const fetchQuizDetails = function(quiz_id) {
   return db.query(queryString, queryParams).then((res) => {
     if (res.rows.length) {
       const quizData = res.rows[0];
-      const quiz = new Quiz(
+      const quiz = new Quiz;
+      quiz.addQuizDetails(
         quizData.title,
         quizData.description,
         quizData.is_public
@@ -155,13 +157,7 @@ const fetchQuizQuestions = function(quiz_id) {
  * @returns new quiz_id
  */
 const addQuiz = function(user_Id, quiz) {
-  quiz.setOwnerId(user_Id);
-  const queryParams = [
-    quiz.getOwnerId(),
-    quiz.title,
-    quiz.description,
-    quiz.isPublic,
-  ];
+  const queryParams = [user_Id, quiz.title, quiz.description, quiz.isPublic];
   let queryString = `
     INSERT INTO quizzes (owner_id, title, description, is_public)
     VALUES ($1, $2, $3, $4)
@@ -174,12 +170,11 @@ const addQuiz = function(user_Id, quiz) {
     .then((quiz_id) => {
       queryParams.length = 0;
 
-      quiz.setQuizId(quiz_id);
-      queryParams.push(quiz.getQuizId());
+      queryParams.push(quiz_id);
       queryString = `INSERT INTO questions (quiz_id, prompt) VALUES`;
       const valuesArray = [];
 
-      for (question of quiz.questions) {
+      for (const question of quiz.questions) {
         queryParams.push(question.prompt);
         valuesArray.push(` ($1, $${queryParams.length})`);
       }
@@ -195,10 +190,9 @@ const addQuiz = function(user_Id, quiz) {
       const valuesArray = [];
 
       for (let i = 0; i < quiz.questions.length; i++) {
-        quiz.questions[i].setQuestionId(res.rows[i].id);
-        queryParams.push(quiz.questions[i].getQuestionId());
+        queryParams.push(res.rows[i].id);
         const qIDParam = `$${queryParams.length}`;
-        for (answer of quiz.questions[i].answers) {
+        for (const answer of quiz.questions[i].answers) {
           queryParams.push(answer.text);
           queryParams.push(answer.is_correct);
           valuesArray.push(

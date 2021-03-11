@@ -1,4 +1,6 @@
-<div class="card shadow border-left-primary py-2 create_card" data-aos="flip-up" data-aos-delay="250"
+const questionCardTemplate = function(counter) {
+  return $(`
+  <div class="card shadow border-left-primary py-2 create_card" data-aos="flip-up" data-aos-delay="250"
   data-aos-once="true">
   <div class="card-body">
     <div class="d-flex justify-content-between">
@@ -34,3 +36,5 @@
     </div>
   </div>
 </div>
+`);
+};
