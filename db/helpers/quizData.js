@@ -155,13 +155,7 @@ const fetchQuizQuestions = function(quiz_id) {
  * @returns new quiz_id
  */
 const addQuiz = function(user_Id, quiz) {
-  quiz.setOwnerId(user_Id);
-  const queryParams = [
-    quiz.getOwnerId(),
-    quiz.title,
-    quiz.description,
-    quiz.isPublic,
-  ];
+  const queryParams = [user_Id, quiz.title, quiz.description, quiz.isPublic];
   let queryString = `
     INSERT INTO quizzes (owner_id, title, description, is_public)
     VALUES ($1, $2, $3, $4)
@@ -174,12 +168,11 @@ const addQuiz = function(user_Id, quiz) {
     .then((quiz_id) => {
       queryParams.length = 0;
 
-      quiz.setQuizId(quiz_id);
-      queryParams.push(quiz.getQuizId());
+      queryParams.push(quiz_id);
       queryString = `INSERT INTO questions (quiz_id, prompt) VALUES`;
       const valuesArray = [];
 
-      for (question of quiz.questions) {
+      for (const question of quiz.questions) {
         queryParams.push(question.prompt);
         valuesArray.push(` ($1, $${queryParams.length})`);
       }
@@ -195,10 +188,9 @@ const addQuiz = function(user_Id, quiz) {
       const valuesArray = [];
 
       for (let i = 0; i < quiz.questions.length; i++) {
-        quiz.questions[i].setQuestionId(res.rows[i].id);
-        queryParams.push(quiz.questions[i].getQuestionId());
+        queryParams.push(res.rows[i].id);
         const qIDParam = `$${queryParams.length}`;
-        for (answer of quiz.questions[i].answers) {
+        for (const answer of quiz.questions[i].answers) {
           queryParams.push(answer.text);
           queryParams.push(answer.is_correct);
           valuesArray.push(
