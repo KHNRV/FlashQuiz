@@ -26,8 +26,8 @@ INSERT INTO questions (quiz_id, prompt) VALUES
 
 --question.id 16 - 19, quiz_id = 5
 INSERT INTO questions (quiz_id, prompt) VALUES
-(5, "From 1964 to 1985, who asked you not to squeeze the Charmin?"),
-(5,  "Nadia Comaneci was the first gymnast to ever do what at the Olympics?"),
-(5, "Which of these birds has the biggest brain relative to its size?"),
-(5, "When playing Blackjack, how many points would be considered a bust?")
+(5, 'From 1964 to 1985, who asked you not to squeeze the Charmin?'),
+(5,  'Nadia Comaneci was the first gymnast to ever do what at the Olympics?'),
+(5, 'Which of these birds has the biggest brain relative to its size?'),
+(5, 'When playing Blackjack, how many points would be considered a bust?')
 

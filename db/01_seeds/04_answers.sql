@@ -78,22 +78,22 @@ INSERT INTO answers (question_id, text, is_correct) VALUES
 (15, '15 kilometers', FALSE),
 (15, '25 kilometers', FALSE);
 INSERT INTO answers (question_id, text, is_correct) VALUES
-(16, "Mrs. Potts", false),
-(16, "Mr. Whipple", true),
-(16, "Mr. Rogers", false),
-(16, "Mrs. Fields", false);
+(16, 'Mrs. Potts', false),
+(16, 'Mr. Whipple', true),
+(16, 'Mr. Rogers', false),
+(16, 'Mrs. Fields', false);
 INSERT INTO answers (question_id, text, is_correct) VALUES
-(17, "Get a perfect 10", true ),
-(17, "Finish with a broken ankle",  false ),
-(17, "Win an Olympic gold medal",  false ),
-(17, "Forfeit her position",  false );
+(17, 'Get a perfect 10', true ),
+(17, 'Finish with a broken ankle',  false ),
+(17, 'Win an Olympic gold medal',  false ),
+(17, 'Forfeit her position',  false );
 INSERT INTO answers (question_id, text, is_correct) VALUES
-(18, "Ostrich", false ),
-(18, "Hummingbird", true ),
-(18, "Sparrow", false ),
-(18, "Eagle", false );
+(18, 'Ostrich', false ),
+(18, 'Hummingbird', true ),
+(18, 'Sparrow', false ),
+(18, 'Eagle', false );
 INSERT INTO answers (question_id, text, is_correct) VALUES
-(19, "21", false),
-(19, "22", true),
-(19, "15", false),
-(19, "19", false);
+(19, '21', false),
+(19, '22', true),
+(19, '15', false),
+(19, '19', false);

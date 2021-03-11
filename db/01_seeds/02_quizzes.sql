@@ -9,4 +9,4 @@ VALUES (3, 'Animal Triva', 'Test your knowledge of animals');
 INSERT INTO quizzes (owner_id, title, description, is_public)
 VALUES (3, 'Private Quiz', 'A quiz without any questions', false);
 INSERT INTO quizzes (owner_id, title, description, is_public)
-VALUES (2, 'The Super Fast Quiz', "It is super fast. Don't blink!", true)
+VALUES (2, 'The Super Fast Quiz', 'It is super fast. Do not blink!', true)
