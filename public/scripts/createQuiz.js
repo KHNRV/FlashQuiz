@@ -45,11 +45,10 @@ const submitQuiz = function(event) {
 };
 
 const addQuestionCard = function(counter) {
-  counter += 1;
   $("#questions_container").append(questionCardTemplate(counter));
 };
 
-let counter = 0;
+let counter = 1;
 
 $(() => {
   $("#new_quiz").on("submit", (event) => {
@@ -61,6 +60,7 @@ $(() => {
 
   //add question card
   $("#add_question").click(() => {
+    counter += 1;
     addQuestionCard(counter);
   });
 
