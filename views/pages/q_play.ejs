@@ -7,6 +7,7 @@
   <title>
     Playing: <%= quiz.title %> - FLASHQUIZ
   </title>
+  <link rel="icon" type="image/svg+xml" sizes="150x150" href="/img/rocket-solid.svg">
   <link rel="stylesheet" href="/vendor/bootstrap.min.css">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
@@ -21,11 +22,11 @@
 </head>
 
 <body id="play-body">
-  <div class="container-fluid">
+  <div class="container-fluid" id="play_box">
     <!-- TODO: Iterate Questions -->
   </div>
   <footer class="bg-white sticky-footer" id="play-footer"><a
-      class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="/">
+      class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0 logo" href="/">
       <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-rocket"></i></div>
       <div class="sidebar-brand-text mx-3"><span>FLASHQUIZ</span></div>
     </a>
@@ -33,8 +34,9 @@
       <div class="text-center my-auto copyright"><span>Copyright © FlashQuiz 2021</span></div>
     </div>
   </footer>
-  <% include('../partials/vendor_scripts') %>
-
+  <%- include('../partials/vendor_scripts') %>
+    <script src="/scripts/play.js"></script>
+    <script src="/scripts/play_template.js"></script>
 </body>
 
 </html>
