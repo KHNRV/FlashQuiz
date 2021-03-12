@@ -19,15 +19,23 @@ const submitQuiz = function(event) {
   const wrongAnswers3 = $("[name='wrong_3']");
 
   const quiz = new Quiz();
-  quiz.addQuizDetails(title, description, !isPublic);
+  quiz.addQuizDetails(escapeText(title), escapeText(description), !isPublic);
 
   //iterate over jQuery "arrays" and create associated classes as they are added to the quiz
   for (let i = 0; i < prompts.length; i++) {
-    const question = new Question($(prompts[i]).val());
-    question.addAnswer(new Answer($(correctAnswers[i]).val(), true));
-    question.addAnswer(new Answer($(wrongAnswers1[i]).val(), false));
-    question.addAnswer(new Answer($(wrongAnswers2[i]).val(), false));
-    question.addAnswer(new Answer($(wrongAnswers3[i]).val(), false));
+    const question = new Question(escapeText($(prompts[i]).val()));
+    question.addAnswer(
+      new Answer(escapeText($(correctAnswers[i]).val()), true)
+    );
+    question.addAnswer(
+      new Answer(escapeText($(wrongAnswers1[i]).val()), false)
+    );
+    question.addAnswer(
+      new Answer(escapeText($(wrongAnswers2[i]).val()), false)
+    );
+    question.addAnswer(
+      new Answer(escapeText($(wrongAnswers3[i]).val()), false)
+    );
     quiz.addQuestion(question);
   }
 
@@ -36,11 +44,10 @@ const submitQuiz = function(event) {
     method: "POST",
     contentType: "application/json",
     data: JSON.stringify(quiz),
-  }).done(() => {
-    // turn off event handlers for #new_quiz, trigger a form reset, then trigger submit (default form behaviour makes a GET request to /quizzes)
-    $("#new_quiz").off();
+  }).done((response) => {
+    const quizId = response.quizId;
+    window.location.href = `/quizzes/${quizId}`;
     $("#new_quiz").trigger("reset");
-    $("#new_quiz").trigger("submit");
   });
 };
 
@@ -51,7 +58,7 @@ const addQuestionCard = function(counter) {
 let counter = 1;
 
 $(() => {
-  $("#new_quiz").on("submit", (event) => {
+  $("form").submit((event) => {
     submitQuiz(event);
   });
 
