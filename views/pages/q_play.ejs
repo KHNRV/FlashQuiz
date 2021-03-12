@@ -33,10 +33,14 @@
     <div class="container my-auto">
       <div class="text-center my-auto copyright"><span>Copyright © FlashQuiz 2021</span></div>
     </div>
+
   </footer>
   <%- include('../partials/vendor_scripts') %>
     <script src="/scripts/play.js"></script>
-    <script src="/scripts/play_template.js"></script>
+    <script src="/constants/play_template.js"></script>
+    <script src="/constants/play_stats_template.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+    <script>const quizId = <%= quiz._quizId %></script>
 </body>
 
 </html>
