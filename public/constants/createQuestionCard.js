@@ -1,3 +1,10 @@
+/**
+ * This function generates the HTML code of the question card for the quiz
+ * creator
+ * @param {integer} counter - Number of the question. Should be incremented
+ * after every use.
+ * @returns HTML of question card
+ */
 const questionCardTemplate = function(counter) {
   return $(`
   <div class="card shadow border-left-primary py-2 create_card" data-aos="flip-up" data-aos-delay="250"

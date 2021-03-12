@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-// const bcrypt = require("bcrypt");
+
 // ! List of db helper functions utilized for this router
-////getUsernameById(userId);
 //getUserByEmail(email); returns a user object containing username, email, userId and password
 
 /*

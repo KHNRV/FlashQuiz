@@ -1,10 +1,18 @@
-//createQuiz.js
+/**
+ * HTML escapes a given string and return the safe version
+ * @param {string} str
+ * @returns
+ */
 const escapeText = function(str) {
   const element = $("<div>");
   element.text(str);
   return element.html();
 };
 
+/**
+ * Send a new quiz to the database from the content of a form
+ * @param {object} event
+ */
 const submitQuiz = function(event) {
   event.preventDefault();
 
@@ -51,6 +59,10 @@ const submitQuiz = function(event) {
   });
 };
 
+/**
+ * Append a new question card to the form
+ * @param {integer} counter
+ */
 const addQuestionCard = function(counter) {
   $("#questions_container").append(questionCardTemplate(counter));
 };
