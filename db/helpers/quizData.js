@@ -99,7 +99,7 @@ const fetchQuizDetails = function(quiz_id) {
   return db.query(queryString, queryParams).then((res) => {
     if (res.rows.length) {
       const quizData = res.rows[0];
-      const quiz = new Quiz;
+      const quiz = new Quiz();
       quiz.addQuizDetails(
         quizData.title,
         quizData.description,
