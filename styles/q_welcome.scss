@@ -37,3 +37,24 @@ h2 {
 .play_link {
   color: rgba(78, 115, 223, 0);
 }
+
+#disp_accuracy {
+  color: var(--blue);
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  font-size: 65px;
+}
+
+#disp_time {
+  color: var(--blue);
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  font-size: 65px;
+}
+
+#disp_points {
+  color: var(--blue);
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  font-size: 90px;
+}

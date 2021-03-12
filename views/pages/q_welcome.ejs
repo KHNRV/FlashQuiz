@@ -41,7 +41,9 @@
               <ul class="nav nav-tabs nav-fill" role="tablist">
                 <% if (quiz.specifiedLeaderboard.length) { %>
                   <li class="nav-item" role="presentation"><a class="nav-link active tab_nav" role="tab"
-                      data-toggle="tab" href="#tab-specified">FRIENDNAME</a></li>
+                      data-toggle="tab" href="#tab-specified">
+                      <%= quiz.specifiedLeaderboard[0].name %>'S SCORE
+                    </a></li>
                   <% } %>
 
                     <% if (quiz.globalLeaderboard.length) { %>
@@ -58,24 +60,7 @@
               <div class="tab-content">
                 <% if (quiz.specifiedLeaderboard.length) { %>
                   <div class="tab-pane active" role="tabpanel" id="tab-specified">
-                    <div class="table-responsive table-borderless">
-                      <table class="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Username</th>
-                            <th>Accuracy</th>
-                            <th>Time</th>
-                            <th>Points</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <% quiz.specifiedLeaderboard.forEach((row, index)=> { %>
-                            <%- include('../partials/leaderboard_row.ejs', {row: row, index: index}) %>
-                              <% }) %>
-                        </tbody>
-                      </table>
-                    </div>
+                    <%- include('../partials/play_stats_card.ejs') %>
                   </div>
                   <% } %>
                     <% if (quiz.globalLeaderboard.length) { %>
