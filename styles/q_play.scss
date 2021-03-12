@@ -42,11 +42,56 @@ h3 {
 .container-fluid {
   padding-right: 24px;
 }
-.is_correct:active:after {
+.is_correct:focus {
   background-color: var(--green);
   border-color: var(--green);
 }
 
+.is_wrong:focus {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
 .logo{
   color: var(--gray);
+}
+.answer_tag {
+  margin-right: 12px;
+}
+
+.btn.btn-primary.action_button {
+  text-align: center;
+  font-weight: bold;
+}
+
+#disp_accuracy {
+  color: var(--blue);
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  font-size: 65px;
+}
+
+#disp_time {
+  color: var(--blue);
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  font-size: 65px;
+}
+
+#disp_points {
+  color: var(--blue);
+  font-family: Montserrat, sans-serif;
+  font-weight: bold;
+  font-size: 90px;
+}
+
+#play_stats_action {
+  margin-top: 0px;
+  padding: 0px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--gray);
+}
+
+#play_stats_disp {
+  padding-bottom: 24px;
 }
