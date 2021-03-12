@@ -9,20 +9,20 @@ const shuffle = (arr) => {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 };
-// Create an array with all the html quiz cards ready
+/**
+ * Keeps track of the number of correct answers
+ */
 let num_correct = 0;
 $(document).ready(function() {
+  /**
+   * Array containing all the HTML question card elements to load into the
+   * window
+   */
   const questionStack = [];
-  //ajax request for the quiz questions | ASYNC
 
-  ///quizzes
-  //quizzes/:quizId --> welcome page for a specific page
-  //quizzes/:quizId/play --> Play engine along with the quiz object
-
-  // let quiz;
   let attemptId;
   $.ajax({
-    url: `/quizzes/${quizId}/json`, ///quizzes/quizId/play
+    url: `/quizzes/${quizId}/json`,
     method: "GET",
     contentType: "application/json",
     success: (response) => {
@@ -42,6 +42,9 @@ $(document).ready(function() {
     },
   })
     .done(() => {
+      /**
+       * Get the quiz data to load in the game engine
+       */
       $.ajax({
         url: `/quizzes/${quizId}/play/start`,
         method: "GET",
@@ -58,11 +61,7 @@ $(document).ready(function() {
       $("#play_box").append(questionStack.shift());
     });
 
-  //ajax request to log the attempt start get the attempt id back | ASYNC
-  //handle the event of an answer being clicked
   $("#play_box").on("click", ".answer", function() {
-    // some kind of animation with a promise
-
     //disable focusing other answers
     $(this).siblings().attr("disabled", true);
     $(window).mousedown(false);
@@ -70,7 +69,6 @@ $(document).ready(function() {
     if ($(this).hasClass("is_correct")) {
       // compute the result
       num_correct += 1;
-      console.log(num_correct);
       $(this).click(false);
     }
     // remove the play card
@@ -83,6 +81,9 @@ $(document).ready(function() {
           $(window).off("mousedown");
         } else {
           const userScore = { score: num_correct, attemptId };
+          /**
+           * Send the result to the database
+           */
           $.ajax({
             url: `/quizzes/${quizId}/play/end`,
             method: "POST",
@@ -107,13 +108,6 @@ $(document).ready(function() {
           });
         }
       }, 250);
-    }, 750);
+    }, 250);
   });
-
-  //
-  // Compute final score
-
-  //ajax request to log the attempt end send id and final score
-
-  //redirect to quizzes/:quizId/:userName
 });
