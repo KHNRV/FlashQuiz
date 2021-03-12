@@ -45,7 +45,10 @@ module.exports = (db) => {
 
     db.addQuiz(userId, quiz)
       .then((response) => {
-        res.redirect("/quizzes");
+        console.log(response);
+        const quizId = response;
+        // res.redirect(`/quizzes/${quizId}`);
+        res.json({ quizId });
       })
       .catch((error) => console.log(error));
   });
@@ -96,7 +99,35 @@ module.exports = (db) => {
       .catch((error) => console.log(error));
   });
 
-  //Route 5 - GET /quizzes/:quizId/publicId?
+  //Route 5 - GET quizzes/:quizId/json
+  router.get("/:quizId/json", (req, res) => {
+    //The objective of this route is to send to the FE a json representation of a specific quiz object
+    const userId = req.session && req.session.userId;
+    const quizId = req.params.quizId;
+    db.fetchAssembledQuiz({ questions: true, quizId, userId }).then(
+      (response) => {
+        res.json(response);
+      }
+    );
+  });
+
+  //Route 6 - GET /quizzes/:quizId/play/start
+  router.get("/:quizId/play/start", (req, res) => {
+    const quizId = req.params.quizId;
+    const userId = req.session && req.session.userId;
+
+    const promise1 = db.fetchUserNameById(userId);
+    const promise2 = db.startAttempt(quizId, userId); // ! New function that captures the time stamp and returns an attempt id
+
+    Promise.all([promise1, promise2]).then((response) => {
+      const userName = response[0];
+      const attemptId = response[1];
+      const responseObject = { userName, attemptId };
+      res.json(responseObject);
+    });
+  });
+
+  //Route 7 - GET /quizzes/:quizId/publicId?
   router.get("/:quizId/:publicId?", (req, res) => {
     //If a user has a quiz link and is logged in; the user should be able to view it regardless of whether it is public or private
     const userId = req.session && req.session.userId;
@@ -127,12 +158,21 @@ module.exports = (db) => {
       .catch((error) => console.log(error));
   });
 
-  //Route 6 - GET quizzes/:quizId/json
-  router.get("/:quizId/json", (req, res) => {
-    //The objective of this route is to send to the FE a json representation of a specific quiz object
+  //Route 8 - /quizzes/:quizId/play/end
+  router.post("/:quizId/play/end", (req, res) => {
     const quizId = req.params.quizId;
-    db.fetchQuizQuestions(quizId).then((response) => {
-      res.json(response);
+    const userId = req.session && req.session.userId;
+    const numCorrect = req.body.score;
+    const attemptId = req.body.attemptId;
+
+    const promise1 = db.finishAttempt(numCorrect, attemptId); // ! New function that captures the time stamp of when the quiz is over & returns attemptId with associated score
+    const promise2 = db.fetchUserNameById(userId);
+
+    Promise.all([promise1, promise2]).then((response) => {
+      const score = response[0];
+      const userName = response[1];
+      const objectResponse = { userName, score, attemptId };
+      res.json(objectResponse);
     });
   });
 
