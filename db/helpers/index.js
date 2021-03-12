@@ -13,11 +13,20 @@ const {
   verifyEmail,
   addUser,
 } = require("./userData");
-const { startAttempt, finishAttempt } = require("./attemptData");
+const {
+  startAttempt,
+  finishAttempt,
+  fetchAttemptLeaderboard,
+} = require("./attemptData");
 
+/**
+ * For given parameters, construct a quiz object
+ * @param {object} params
+ * @returns
+ */
 const fetchAssembledQuiz = function(params) {
   // an aggregate function that compiles a quiz object based on parameters
-  const { questions, quizId, userId, publicId } = params;
+  const { questions, quizId, userId, attemptId } = params;
 
   const promiseObject = {};
 
@@ -37,8 +46,8 @@ const fetchAssembledQuiz = function(params) {
     promiseObject.personalLeaderboard = personalLeaderboardPromise;
   }
 
-  if (publicId) {
-    const specifiedLeaderboardPromise = fetchLeaderboard(quizId, publicId);
+  if (attemptId) {
+    const specifiedLeaderboardPromise = fetchAttemptLeaderboard(attemptId);
     promiseObject.specifiedLeaderboard = specifiedLeaderboardPromise;
   }
 

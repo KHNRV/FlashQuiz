@@ -29,7 +29,7 @@ const playStatsTemplate = function(accuracy, time, points, quizId, attemptId) {
   </div>
   <div class="row align-items-center no-gutters" id="play_stats_action" >
     <div class="col d-flex flex-column mr-2" >
-      <a class="btn btn-primary action_button" role="button" data-clipboard-text="/${quizId}/${attemptId}">SHARE</a>
+      <a class="btn btn-primary action_button" role="button" data-clipboard-text="${window.location.origin}/quizzes/${quizId}/${attemptId}">SHARE</a>
     </div>
     <div class="col d-flex flex-column mr-2">
       <a class="btn btn-primary action_button" role="button" href="/quizzes/${quizId}/play">TRY

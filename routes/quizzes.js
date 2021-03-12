@@ -22,7 +22,7 @@ const router = express.Router();
 module.exports = (db) => {
   // Route 1 - Get /quizzes
   router.get("/", (req, res) => {
-    const userId = req.session && req.session.userId; // *TODO Optional chaining
+    const userId = req.session && req.session.userId;
     const promise1 = db.fetchUserNameById(userId);
     const promise2 = db.getQuizzes();
     Promise.all([promise1, promise2])
@@ -127,21 +127,21 @@ module.exports = (db) => {
     });
   });
 
-  //Route 7 - GET /quizzes/:quizId/publicId?
-  router.get("/:quizId/:publicId?", (req, res) => {
+  //Route 7 - GET /quizzes/:quizId/attemptId?
+  router.get("/:quizId/:attemptId?", (req, res) => {
     //If a user has a quiz link and is logged in; the user should be able to view it regardless of whether it is public or private
     const userId = req.session && req.session.userId;
     const quizId = req.params.quizId;
-    const publicId = req.params && req.params.publicId;
+    const attemptId = req.params && req.params.attemptId;
 
     const promise1 = db.fetchAssembledQuiz({
       questions: false,
       quizId,
       userId,
-      publicId,
+      attemptId,
     });
     const promise2 = db.fetchUserNameById(userId);
-    const promise3 = db.fetchUserNameById(publicId);
+    const promise3 = db.fetchUserNameById(userId);
 
     Promise.all([promise1, promise2, promise3])
       .then((response) => {

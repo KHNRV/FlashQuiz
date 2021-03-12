@@ -34,33 +34,39 @@ const finishAttempt = function(num_correct, attempt_id) {
     .then((res) => {
       return res.rows[0].id;
     })
-    .then((attempt_id) => {
-      const queryParams = [attempt_id];
-      let queryString = `
+    .then((attempt_id) => fetchAttemptLeaderboard(attempt_id))
+    .then((res) => res[0]);
+};
+
+/**
+ * Get stats for a specific attempt id
+ * @param {integer} attempt_id
+ */
+const fetchAttemptLeaderboard = function(attempt_id) {
+  const queryParams = [attempt_id];
+  let queryString = `
     SELECT name,
     concat(num_correct * 100 / total_questions, '%') AS accuracy,
     to_char(duration, 'MI:SS') AS time,
     floor((((num_correct / total_questions) * 800000) + (num_correct * (1000000 - (date_part('microsecond', (duration) / max_duration)))))*.01) AS computed_score
-      FROM (
-        SELECT
-        attempts.id,
-        name,
-        end_time - start_time AS duration,
-        SUM(questions.time_limit / 1000) max_duration,
-        num_correct,
-        COUNT(questions.*) AS total_questions
-        FROM attempts
-        JOIN quizzes ON attempts.quiz_id = quizzes.id
-        JOIN questions ON questions.quiz_id = quizzes.id
-        JOIN users ON attempts.user_id = users.id
-        WHERE attempts.id = $1
-        GROUP BY attempts.id, name, end_time - start_time, num_correct
-      ) AS query
-      ORDER BY computed_score DESC;
-    `;
-      return db.query(queryString, queryParams);
-    })
-    .then((res) => res.rows[0]);
+    FROM (
+    SELECT
+    attempts.id,
+    name,
+    end_time - start_time AS duration,
+    SUM(questions.time_limit / 1000) max_duration,
+    num_correct,
+    COUNT(questions.*) AS total_questions
+    FROM attempts
+    JOIN quizzes ON attempts.quiz_id = quizzes.id
+    JOIN questions ON questions.quiz_id = quizzes.id
+    JOIN users ON attempts.user_id = users.id
+    WHERE attempts.id = $1
+    GROUP BY attempts.id, name, end_time - start_time, num_correct
+  ) AS query
+  ORDER BY computed_score DESC;
+`;
+  return db.query(queryString, queryParams).then((res) => res.rows);
 };
 
-module.exports = { startAttempt, finishAttempt };
+module.exports = { startAttempt, finishAttempt, fetchAttemptLeaderboard };
