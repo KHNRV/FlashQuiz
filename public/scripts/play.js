@@ -1,77 +1,119 @@
-const quiz = {
-  title: "The Super Fast Quiz",
-  description: "It is super fast. Don't blink!",
-  isPublic: true,
-  questions: [
-    {
-      prompt: "From 1964 to 1985, who asked you not to squeeze the Charmin?",
-      answers: [
-        { text: "Mrs. Potts", is_correct: false },
-        { text: "Mr. Whipple", is_correct: true },
-        { text: "Mr. Rogers", is_correct: false },
-        { text: "Mrs. Fields", is_correct: false },
-      ],
-    },
-    {
-      prompt:
-        "Nadia Comaneci was the first gymnast to ever do what at the Olympics?",
-      answers: [
-        { text: "Get a perfect 10", is_correct: true },
-        { text: "Finish with a broken ankle", is_correct: false },
-        { text: "Win an Olympic gold medal", is_correct: false },
-        { text: "Forfeit her position", is_correct: false },
-      ],
-    },
-    {
-      prompt:
-        "Which of these birds has the biggest brain relative to its size?",
-      answers: [
-        { text: "Ostrich", is_correct: false },
-        { text: "Hummingbird", is_correct: true },
-        { text: "Sparrow", is_correct: false },
-        { text: "Eagle", is_correct: false },
-      ],
-    },
-    {
-      prompt:
-        "When playing Blackjack, how many points would be considered a bust?",
-      answers: [
-        { text: "21", is_correct: false },
-        { text: "22", is_correct: true },
-        { text: "15", is_correct: false },
-        { text: "19", is_correct: false },
-      ],
-    },
-  ],
+/**
+ * Shuffle the given array
+ * @param {array} arr
+ * @source javascript.info
+ */
+const shuffle = (arr) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
 };
-
-// Request and receive the quiz object
-
 // Create an array with all the html quiz cards ready
+let num_correct = 0;
 $(document).ready(function() {
   const questionStack = [];
+  //ajax request for the quiz questions | ASYNC
 
-  quiz.questions.forEach((question, index) => {
-    const progression = Math.round((index / quiz.questions.length) * 100);
-    questionStack.push(
-      playTemplate(question.prompt, question.answers, progression)
-    );
+  ///quizzes
+  //quizzes/:quizId --> welcome page for a specific page
+  //quizzes/:quizId/play --> Play engine along with the quiz object
+
+  // let quiz;
+  let attemptId;
+  $.ajax({
+    url: `/quizzes/${quizId}/json`, ///quizzes/quizId/play
+    method: "GET",
+    contentType: "application/json",
+    success: (response) => {
+      quiz = response;
+
+      shuffle(quiz.questions);
+      quiz.questions.forEach((question, index) => {
+        const progression = Math.round((index / quiz.questions.length) * 100);
+        shuffle(question.answers);
+        questionStack.push(
+          playTemplate(question.prompt, question.answers, progression)
+        );
+      });
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  })
+    .done(() => {
+      $.ajax({
+        url: `/quizzes/${quizId}/play/start`,
+        method: "GET",
+        contentType: "application/json",
+        success: (response) => {
+          attemptId = response.attemptId;
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      });
+    })
+    .done(() => {
+      $("#play_box").append(questionStack.shift());
+    });
+
+  //ajax request to log the attempt start get the attempt id back | ASYNC
+  //handle the event of an answer being clicked
+  $("#play_box").on("click", ".answer", function() {
+    // some kind of animation with a promise
+
+    //disable focusing other answers
+    $(this).siblings().attr("disabled", true);
+    $(window).mousedown(false);
+
+    if ($(this).hasClass("is_correct")) {
+      // compute the result
+      num_correct += 1;
+      console.log(num_correct);
+      $(this).click(false);
+    }
+    // remove the play card
+    setTimeout(() => {
+      $(this).parents(".card-body").removeClass("aos-animate");
+      setTimeout(() => {
+        $("#play_box").empty();
+        if (questionStack[0]) {
+          $("#play_box").append(questionStack.shift());
+          $(window).off("mousedown");
+        } else {
+          const userScore = { score: num_correct, attemptId };
+          $.ajax({
+            url: `/quizzes/${quizId}/play/end`,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(userScore),
+          }).then((response) => {
+            console.log(response);
+            const attemptId = response.attemptId;
+            const { name, accuracy, time, computed_score } = response.score;
+            const userName = response.userName;
+            //ICI
+            $("#play_box").append(
+              playStatsTemplate(
+                accuracy,
+                time,
+                computed_score,
+                quiz._quizId,
+                attemptId
+              )
+            );
+            new ClipboardJS(".btn");
+          });
+        }
+      }, 250);
+    }, 750);
   });
 
-  console.log(questionStack);
-  $("#play_box").append(questionStack[3]);
-});
+  //
+  // Compute final score
 
-// $(document).ready(function() {
-//   $("#play_box").append(
-//     playTemplate(
-//       "From 1964 to 1985, who asked you not to squeeze the Charmin?",
-//       [
-//         { text: "Mrs. Potts", is_correct: false },
-//         { text: "Mr. Whipple", is_correct: true },
-//         { text: "Mr. Rogers", is_correct: false },
-//         { text: "Mrs. Fields", is_correct: false },
-//       ]
-//     )
-//   );
-// });
+  //ajax request to log the attempt end send id and final score
+
+  //redirect to quizzes/:quizId/:userName
+});
